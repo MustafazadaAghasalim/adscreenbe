@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">adscreen_kiosk</string>
+    <string name="device_admin_description">Advanced Kiosk Mode for Adscreen</string>
+</resources>

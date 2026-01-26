@@ -1,0 +1,98 @@
+Launching lib/main.dart on NDL W09 in release mode...
+Running Gradle task 'assembleRelease'...                            3.1s
+✓ Built build/app/outputs/flutter-apk/app-release.apk (22.7MB)
+Installing build/app/outputs/flutter-apk/app-release.apk...     
+W/FlutterAnimationAdvance(18082): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(18213): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(18340): FlutterAnimationAdvance getInstance()
+Installing build/app/outputs/flutter-apk/app-release.apk...         4.8s
+W/FlutterAnimationAdvance(18385): FlutterAnimationAdvance getInstance()
+
+Flutter run key commands.
+h List all available interactive commands.
+c Clear the screen
+q Quit (terminate the application on the device).
+
+W/FlutterAnimationAdvance(18458): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(18418): FlutterAnimationAdvance getInstance()
+I/flutter (18458): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FLUTTER OTA(18458): onAttachedToEngine
+D/FLUTTER OTA(18458): onAttachedToActivity
+I/flutter (18458): TabletService: Initializing...
+I/flutter (18458): TabletService: Loaded existing ID: tablet_1766490413809_564
+D/FlutterGeolocator(18458): Creating service.
+D/FlutterGeolocator(18458): Binding to location service.
+E/flutter (18458): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: PlatformException(channel-error, Unable to establish connection on channel: "dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle"., null, null)
+E/flutter (18458): #0      WakelockPlusApi.toggle (package:wakelock_plus_platform_interface/messages.g.dart:182)
+E/flutter (18458): <asynchronous suspension>
+E/flutter (18458): #1      MethodChannelWakelockPlus.toggle (package:wakelock_plus_platform_interface/src/method_channel_wakelock_plus.dart:20)
+E/flutter (18458): <asynchronous suspension>
+E/flutter (18458): 
+D/FlutterGeolocator(18458): Flutter engine connected. Connected engine count 1
+W/FlutterAnimationAdvance(18702): FlutterAnimationAdvance getInstance()
+I/flutter (18458): TabletService: Server Unreachable: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/health
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383633, longitude: 49.8114167, accuracy: 20.899999618530273, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:16:52.056770Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+W/FlutterAnimationAdvance(18840): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(18905): FlutterAnimationAdvance getInstance()
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 1)
+I/flutter (18458): Update check failed: ClientException with SocketException: Connection failed (OS Error: Network is unreachable, errno = 101), address = your-server.com, port = 443, uri=https://your-server.com/api/check_update?tablet_id=tablet_1766490413809_564
+I/flutter (18458): KioskScreen Build: isLocked=false, PIN=null
+I/flutter (18458): AdService: Initializing Socket.io connection to https://adscreen.az
+I/flutter (18458): **** AdService: Fetching ad list for tablet_1766490413809_564... ****
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): **** AdService: Fetch error: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/get_ads_for_tablet?tablet_id=tablet_1766490413809_564 ****
+I/flutter (18458): **** StackTrace: #0      IOClient.send (package:http/src/io_client.dart:227)
+I/flutter (18458): <asynchronous suspension>
+I/flutter (18458): #1      BaseClient._sendUnstreamed (package:http/src/base_client.dart:93)
+I/flutter (18458): <asynchronous suspension>
+I/flutter (18458): #2      _withClient (package:http/http.dart:170)
+I/flutter (18458): <asynchronous suspension>
+I/flutter (18458): #3      AdService._fetchAndDownloadAds (package:adscreen_kiosk/services/ad_service.dart:78)
+I/flutter (18458): <asynchronous suspension>
+I/flutter (18458):  ****
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383624, longitude: 49.8113785, accuracy: 14.335000038146973, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:17:42.039342Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 2)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383735, longitude: 49.8114284, accuracy: 17.695999145507812, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:18:11.992302Z}
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 3)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383502, longitude: 49.8113911, accuracy: 13.930999755859375, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:18:42.010228Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 4)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383448, longitude: 49.8113795, accuracy: 20.399999618530273, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:19:12.012112Z}
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 5)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383494, longitude: 49.811385, accuracy: 14.13599967956543, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:19:42.016089Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 6)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383607, longitude: 49.8113856, accuracy: 26.399999618530273, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:20:12.951948Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 7)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383479, longitude: 49.8113932, accuracy: 12.967000007629395, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:20:42.013472Z}
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 8)
+I/flutter (18458): TabletService: Socket Error: timeout
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383481, longitude: 49.8113953, accuracy: 14.237000465393066, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:21:12.019239Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 9)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383561, longitude: 49.8113984, accuracy: 20.399999618530273, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:21:42.031180Z}
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (18458): TabletService: Update queued (Total: 10)
+I/flutter (18458): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (18458): TabletService: Sending Update: {tablet_id: tablet_1766490413809_564, battery_percent: 88, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T15:16:39.321540, free_space_mb: 95249, latitude: 40.4383482, longitude: 49.811388, accuracy: 21.600000381469727, device_model: HONOR NDL-W09, os_version: Android 14, network_type: WiFi, timestamp: 2025-12-26T15:22:12.044980Z}
+Application finished.

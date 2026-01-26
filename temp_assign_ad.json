@@ -1,0 +1,10 @@
+{
+    "tablet_id": "tablet_1766362883284_5279",
+    "ad": {
+        "id": "local_test_1",
+        "name": "Big Buck Bunny",
+        "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "type": "video",
+        "duration": 15
+    }
+}

@@ -1,0 +1,220 @@
+Launching lib/main.dart on NDL L09 in release mode...
+Running Gradle task 'assembleRelease'...                           38.5s
+✓ Built build/app/outputs/flutter-apk/app-release.apk (22.7MB)
+Installing build/app/outputs/flutter-apk/app-release.apk...         4.2s
+
+Flutter run key commands.
+h List all available interactive commands.
+c Clear the screen
+q Quit (terminate the application on the device).
+
+W/FlutterAnimationAdvance(15081): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(15148): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(15120): FlutterAnimationAdvance getInstance()
+I/flutter (15148): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FLUTTER OTA(15148): onAttachedToEngine
+D/FLUTTER OTA(15148): onAttachedToActivity
+I/flutter (15148): TabletService: Initializing...
+D/FlutterGeolocator(15148): Creating service.
+D/FlutterGeolocator(15148): Binding to location service.
+E/flutter (15148): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: PlatformException(channel-error, Unable to establish connection on channel: "dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle"., null, null)
+E/flutter (15148): #0      WakelockPlusApi.toggle (package:wakelock_plus_platform_interface/messages.g.dart:182)
+E/flutter (15148): <asynchronous suspension>
+E/flutter (15148): #1      MethodChannelWakelockPlus.toggle (package:wakelock_plus_platform_interface/src/method_channel_wakelock_plus.dart:20)
+E/flutter (15148): <asynchronous suspension>
+E/flutter (15148): 
+D/FlutterGeolocator(15148): Flutter engine connected. Connected engine count 1
+I/flutter (15148): TabletService: Generated/Assigned new ID: tablet_fc8ef33780879ec9
+D/FLUTTER OTA(15148): REQUEST PERMISSIONS RESULT RECEIVED
+E/FLUTTER OTA(15148): ERROR: Permission not granted
+I/flutter (15148): TabletService: Server Unreachable: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/health
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+W/FlutterAnimationAdvance(15690): FlutterAnimationAdvance getInstance()
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+W/FlutterAnimationAdvance(15733): FlutterAnimationAdvance getInstance()
+W/FlutterAnimationAdvance(15811): FlutterAnimationAdvance getInstance()
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 31, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39028, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:13:58.351672Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 1)
+I/flutter (15148): Update check failed: ClientException with SocketException: Failed host lookup: 'your-server.com' (OS Error: No address associated with hostname, errno = 7), uri=https://your-server.com/api/check_update?tablet_id=tablet_fc8ef33780879ec9
+I/flutter (15148): KioskScreen Build: isLocked=false, PIN=null
+I/flutter (15148): AdService: Initializing Socket.io connection to https://adscreen.az
+I/flutter (15148): **** AdService: Fetching ad list for tablet_fc8ef33780879ec9... ****
+I/flutter (15148): **** AdService: Fetch error: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/get_ads_for_tablet?tablet_id=tablet_fc8ef33780879ec9 ****
+I/flutter (15148): **** StackTrace: #0      IOClient.send (package:http/src/io_client.dart:227)
+I/flutter (15148): <asynchronous suspension>
+I/flutter (15148): #1      BaseClient._sendUnstreamed (package:http/src/base_client.dart:93)
+I/flutter (15148): <asynchronous suspension>
+I/flutter (15148): #2      _withClient (package:http/http.dart:170)
+I/flutter (15148): <asynchronous suspension>
+I/flutter (15148): #3      AdService._fetchAndDownloadAds (package:adscreen_kiosk/services/ad_service.dart:78)
+I/flutter (15148): <asynchronous suspension>
+I/flutter (15148):  ****
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 31, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:14:38.384005Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 2)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 31, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:15:08.384257Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 3)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 31, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:15:38.399531Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 4)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 31, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:16:08.385648Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 5)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:16:38.386195Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 6)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:17:08.387403Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:17:38.390119Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 8)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:18:08.390657Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 9)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:18:38.390090Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 10)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:19:08.388075Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 11)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:19:38.389912Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 12)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:20:08.388347Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 13)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:20:38.390686Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 14)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:21:08.393395Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 15)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:21:38.388874Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 16)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Location unavailable: TimeoutException after 0:00:10.000000: Future not completed
+I/flutter (15148): TabletService: Sending Update: {tablet_id: tablet_fc8ef33780879ec9, battery_percent: 30, battery_count: 1, is_charging: true, charging_status: charging, last_unplugged: null, boot_time: 2025-12-26T19:13:19.716141, free_space_mb: 39027, latitude: 0.0, longitude: 0.0, accuracy: 0.0, device_model: HONOR NDL-L09, os_version: Android 14, network_type: None, timestamp: 2025-12-26T15:22:08.382012Z}
+I/flutter (15148): TabletService: Error sending update: ClientException with SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7), uri=https://adscreen.az/api/update_tablet_status
+I/flutter (15148): TabletService: Update queued (Total: 17)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+I/flutter (15148): TabletService: Socket Error: SocketException: Failed host lookup: 'adscreen.az' (OS Error: No address associated with hostname, errno = 7)
+Application finished.
