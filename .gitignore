@@ -53,3 +53,19 @@ lib/generated_plugin_registrant.dart
 
 # Native Backup
 _native_backup/
+
+# Webapp / Next.js directories (separate repos)
+AdscreenWebsite copy/
+adscreen-nextjs/
+
+# Node / build artifacts
+node_modules/
+deploy.zip
+deploy_package/
+*.hprof
+
+# Temp / screenshots
+flutter_*.png
+temp_icons/
+webapp_logs*/
+native_android_design/

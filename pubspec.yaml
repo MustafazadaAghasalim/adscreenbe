@@ -12,6 +12,7 @@ dependencies:
   
   # Real-time
   socket_io_client: ^2.0.3
+  web_socket_channel: ^2.4.0
   
   # Firebase (For Real-time Ads)
   
@@ -21,20 +22,21 @@ dependencies:
   
   # Networking & Device
   dio: ^5.0.0
-  http: ^1.1.0
+  http: ^1.2.0
   permission_handler: ^11.0.1
   shared_preferences: ^2.2.2
-  device_info_plus: ^9.0.0
+  device_info_plus: ^10.1.0
   connectivity_plus: ^5.0.2
   geolocator: ^10.0.0
-  battery_plus: ^5.0.0
-  wakelock_plus: ^1.1.0
+  battery_plus: ^6.0.0
+  wakelock_plus: ^1.2.0
   package_info_plus: ^4.0.0
   android_id: ^0.4.0
   kiosk_mode: ^0.8.0
   
   # UI / Media
   cached_network_image: ^3.3.0
+  flutter_cache_manager: ^3.3.1
   video_player: ^2.8.2
   chewie: ^1.7.0
   intl: ^0.19.0
@@ -43,18 +45,32 @@ dependencies:
   disk_space_2: ^1.0.11
   intl_phone_field: ^3.2.0
   pinput: ^3.0.0
+  shimmer: ^3.0.0
+  auto_size_text: ^3.0.0
+  qr_flutter: ^4.1.0
+  
+  # Database
+  sqflite: ^2.3.0
+  
+  # ML & Face Detection
+  google_mlkit_face_detection: ^0.11.0
   
   # Remote Management
   firebase_core: ^2.24.2
   firebase_storage: ^11.5.0
   cloud_firestore: ^4.14.0
   firebase_remote_config: ^4.3.8
+  firebase_auth: ^4.15.0
   ota_update: ^7.0.1
   restart_app: ^1.2.1
   url_launcher: ^6.2.1
   camera: ^0.10.5+9
   path_provider: ^2.1.2
-  file_picker: ^6.1.1
+  file_picker: ^8.0.0
+  
+  # Maps
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
 
 dev_dependencies:
   flutter_test:

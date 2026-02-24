@@ -18,8 +18,15 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/server_config.dart';
-import 'modern_pin_dialog.dart';
+import '../admin_unlock_dialog.dart';
+import 'modern_pin_dialog.dart'; // For ModernPinKey widget used by _RemoteLockOverlay
 import '../services/security_service.dart';
+
+// === NEW IMPORTS ===
+import '../services/proof_of_play_service.dart';
+import '../services/heatmap_telemetry_service.dart';
+import '../services/isolate_prefetch_service.dart';
+import 'ux_widgets.dart';
 
 Future<void> toggleKiosk(bool enable) async {
   if (enable) {
@@ -96,6 +103,24 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     print("KioskScreen: Playing ${currentAd.name} (${currentAd.type}) for ${duration}s");
     AdService().setCurrentCreative(currentAd.name);
 
+    // === NEW: Log proof-of-play ===
+    ProofOfPlayService().logPlay(
+      adId: currentAd.id,
+      adName: currentAd.name,
+      tabletId: TabletService().tabletId ?? 'unknown',
+      startedAt: DateTime.now(),
+      durationSeconds: duration,
+    );
+
+    // === NEW: Set current ad for heatmap tracking ===
+    HeatmapTelemetryService().setCurrentAd(currentAd.id);
+
+    // === NEW: Prefetch upcoming ads in background ===
+    if (_currentAdIndex + 1 < _ads.length) {
+      final cacheDir = '/data/user/0/com.example.adscreen/cache';
+      IsolatePrefetchService().prefetchUpcoming(_ads, _currentAdIndex, cacheDir);
+    }
+
     _adTimer = Timer(Duration(seconds: duration), () {
       if (mounted) {
         setState(() {
@@ -115,27 +140,34 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   }
 
   Future<void> _showPasswordDialog() async {
-    showGeneralDialog(
+    showDialog(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: "Exit",
-      barrierColor: Colors.black.withOpacity(0.8),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, anim1, anim2) {
-        return const ModernPinDialog();
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return FadeTransition(
-          opacity: anim1,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 1.1, end: 1.0).animate(
-              CurvedAnimation(parent: anim1, curve: Curves.easeOutBack),
-            ),
-            child: child,
-          ),
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        return AdminUnlockDialog(
+          correctPin: "3458",
+          deviceId: TabletService().tabletId ?? "NDL-W09",
+          onUnlock: () {
+            Navigator.pop(context);
+            _handleAdminUnlock();
+          },
+          onCancel: () {
+            Navigator.pop(context);
+          },
         );
       },
     );
+  }
+
+  Future<void> _handleAdminUnlock() async {
+    const platform = MethodChannel('com.adscreen.kiosk/telemetry');
+    try {
+      await platform.invokeMethod('stopKiosk');
+      await platform.invokeMethod('killApp');
+    } catch (e) {
+      print("Error stopping kiosk: $e");
+    }
   }
 
   @override
@@ -199,7 +231,8 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
 
   Widget _buildAdArea() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      // === NEW: Shimmer loading instead of plain spinner ===
+      return const AdShimmerLoader();
     }
     if (_ads.isEmpty) {
       return _buildDefaultBranding();
@@ -209,7 +242,21 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     if (_currentAdIndex >= _ads.length) _currentAdIndex = 0;
     final ad = _ads[_currentAdIndex];
 
-    return _AdContent(ad: ad);
+    // === NEW: Wrap with GestureDetector for heatmap touch tracking ===
+    return GestureDetector(
+      onTapDown: (details) {
+        final size = MediaQuery.of(context).size;
+        HeatmapTelemetryService().recordTouch(
+          x: details.globalPosition.dx,
+          y: details.globalPosition.dy,
+          screenWidth: size.width,
+          screenHeight: size.height,
+        );
+        // Haptic feedback on touch
+        KioskHaptics.lightTap();
+      },
+      child: _AdContent(ad: ad),
+    );
   }
 
   Widget _buildDefaultBranding() {

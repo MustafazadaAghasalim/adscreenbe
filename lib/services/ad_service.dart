@@ -21,6 +21,10 @@ class AdService {
   List<Ad> _cachedAds = [];
   List<Ad> get cachedAds => _cachedAds;
 
+  // Debounce to prevent multiple rapid fetches
+  Timer? _fetchDebounce;
+  bool _isFetching = false;
+
   // Metrics tracking
   String _currentCreative = "None";
   int _impressionsToday = 0;
@@ -45,24 +49,37 @@ class AdService {
       return;
     }
 
-    print("AdService: Initializing Socket.io connection to ${ServerConfig.baseUrl}");
+    final tabletId = TabletService().tabletId ?? 'unknown';
+    print("AdService: Initializing Socket.io connection to ${ServerConfig.baseUrl} as $tabletId");
     _socket = IO.io(ServerConfig.baseUrl, IO.OptionBuilder()
       .setTransports(['websocket'])
-      .setQuery({'tablet_id': TabletService().tabletId ?? 'unknown'}) // Send ID on connect
+      .setQuery({'tablet_id': tabletId})
       .enableAutoConnect() 
+      .enableReconnection()
+      .setReconnectionAttempts(double.maxFinite.toInt())
+      .setReconnectionDelay(2000)
       .build());
-
-    // _socket!.connect(); // enableAutoConnect is true by default or set above
 
     _socket!.onConnect((_) {
       print('**** AdService: Socket Connected Successfully! ****');
-      _fetchAndDownloadAds();
+      // Register this tablet with the server
+      _socket!.emit('register_tablet', {
+        'tablet_id': tabletId,
+        'type': 'tablet',
+        'connected_at': DateTime.now().toIso8601String(),
+      });
+      _debouncedFetch();
     });
 
     _socket!.onConnectError((err) => print('**** AdService: Socket Connect Error: $err ****'));
     _socket!.onConnectTimeout((_) => print('**** AdService: Socket Connect Timeout ****'));
     _socket!.onError((err) => print('**** AdService: Socket Error: $err ****'));
+    _socket!.onReconnect((_) {
+      print('**** AdService: Socket Reconnected! ****');
+      _debouncedFetch();
+    });
 
+    // Listen for ad updates (server → tablet)
     _socket!.on('ad_update', (data) {
       print('AdService: Received ad_update event: $data');
       if (data is Map && data['tablet_id'] != null) {
@@ -70,27 +87,86 @@ class AdService {
         final myId = TabletService().tabletId;
         if (targetId == myId) {
           print("AdService: Update is for me ($myId). Fetching...");
-          _fetchAndDownloadAds();
+          _debouncedFetch();
         } else {
           print("AdService: Update is for $targetId, ignoring.");
         }
       } else {
         // Broadcast or unknown format - fetch to be safe
         print("AdService: Broadcast update. Fetching...");
-        _fetchAndDownloadAds();
+        _debouncedFetch();
+      }
+    });
+
+    // Listen for lock commands via Socket.IO (server → tablet)
+    _socket!.on('tablet_lock_command', (data) {
+      print('AdService: Received lock command: $data');
+      if (data is Map) {
+        final targetId = data['tablet_id'];
+        final myId = TabletService().tabletId;
+        if (targetId == myId) {
+          final locked = data['locked'] == true;
+          final pin = data['pin']?.toString();
+          TabletService().updateLockState(locked, pin);
+          print("AdService: Lock command applied: locked=$locked");
+        }
+      }
+    });
+
+    // Listen for remote commands via Socket.IO (server → tablet)
+    _socket!.on('remote_command', (data) {
+      print('AdService: Received remote command: $data');
+      if (data is Map) {
+        final targetId = data['tablet_id'];
+        final myId = TabletService().tabletId;
+        if (targetId == myId) {
+          final command = data['command']?.toString();
+          if (command != null) {
+            print("AdService: Executing remote command: $command");
+            // Handle via TabletHeartbeatService
+          }
+        }
       }
     });
 
     _socket!.onDisconnect((_) => print('AdService: Socket Disconnected'));
     
     // Initial fetch on startup
-    _fetchAndDownloadAds();
+    _debouncedFetch();
+  }
+
+  /// Debounced fetch to prevent rapid-fire requests
+  void _debouncedFetch() {
+    _fetchDebounce?.cancel();
+    _fetchDebounce = Timer(const Duration(milliseconds: 500), () {
+      _fetchAndDownloadAds();
+    });
+  }
+
+  /// Called by TelemetryService to push real-time telemetry via Socket.IO
+  void emitTelemetry(Map<String, dynamic> payload) {
+    if (_socket != null && _socket!.connected) {
+      _socket!.emit('tablet_telemetry', payload);
+    }
+  }
+
+  /// Called by TabletHeartbeatService when Firestore ad sub-collection changes
+  void refreshAdsFromFirestore() {
+    print("AdService: Firestore ad change detected, refreshing...");
+    _debouncedFetch();
   }
 
   Future<void> _fetchAndDownloadAds() async {
+    if (_isFetching) {
+      print("AdService: Already fetching, skipping duplicate request.");
+      return;
+    }
+    _isFetching = true;
+
     final tabletId = TabletService().tabletId;
     if (tabletId == null) {
       print("**** AdService: No Tablet ID yet, skipping fetch. ****");
+      _isFetching = false;
       return;
     }
 
@@ -134,6 +210,8 @@ class AdService {
     } catch (e, stackTrace) {
       print("**** AdService: Fetch error: $e ****");
       print("**** StackTrace: $stackTrace ****");
+    } finally {
+      _isFetching = false;
     }
   }
 

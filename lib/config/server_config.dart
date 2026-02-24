@@ -15,5 +15,7 @@ class ServerConfig {
   static const String adRetrievalEndpoint = "$baseUrl/api/get_ads_for_tablet";
   static const String healthCheckEndpoint = "$baseUrl/health";
   static const String socketServerUrl = baseUrl;
+  static const String intruderAlertEndpoint = "$baseUrl/api/upload_intruder_alert";
   static const int updateIntervalSeconds = 30;
+  static const String deviceSettingsEndpoint = "$baseUrl/api/admin/get_device_settings";
 }

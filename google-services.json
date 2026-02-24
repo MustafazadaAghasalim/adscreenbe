@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "mock-project-id",
-    "storage_bucket": "mock-project-id.appspot.com"
+    "project_number": "306987139596",
+    "project_id": "adscreen-188e3",
+    "storage_bucket": "adscreen-188e3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:mockapikey",
+        "mobilesdk_app_id": "1:306987139596:android:cfd217983c48e89f",
         "android_client_info": {
           "package_name": "com.example.adscreen"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "mock_api_key"
+          "current_key": "AIzaSyBXpWiPVHlpZZK5cwGSQUIYg7IC0qmlZec"
         }
       ],
       "services": {

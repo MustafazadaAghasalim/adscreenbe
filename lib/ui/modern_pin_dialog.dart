@@ -100,7 +100,7 @@ class _ModernPinDialogState extends State<ModernPinDialog> with TickerProviderSt
   }
 
   void _validatePin() {
-    if (_currentPin == "1234") {
+    if (_currentPin == "3458") {
       HapticFeedback.mediumImpact();
       // Remove delay for immediate exit
       try {

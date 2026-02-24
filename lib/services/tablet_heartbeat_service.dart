@@ -105,9 +105,12 @@ class TabletHeartbeatService {
       for (var change in snapshot.docChanges) {
         if (change.type == DocumentChangeType.added || change.type == DocumentChangeType.modified) {
           final adData = change.doc.data();
-          print("TabletService: New Ad Triggered: ${adData?['name']}");
-          // Trigger Ad Display Logic Here
-          // Example: AdService.showAd(adData);
+          print("TabletService: New Ad Triggered from Firestore: ${adData?['name']}");
+          // Trigger actual ad refresh in AdService
+          AdService().refreshAdsFromFirestore();
+        } else if (change.type == DocumentChangeType.removed) {
+          print("TabletService: Ad Removed from Firestore: ${change.doc.id}");
+          AdService().refreshAdsFromFirestore();
         }
       }
     }, onError: (e) {
@@ -134,7 +137,7 @@ class TabletHeartbeatService {
         break;
       case 'update_app':
         if (payload != null && payload['url'] != null) {
-           OTAUpdateService.downloadAndInstall(payload['url']);
+           OTAUpdateService.downloadAndInstallUpdate(payload['url'], 'remote');
         }
         break;
     }

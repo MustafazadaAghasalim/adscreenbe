@@ -3,27 +3,36 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:battery_plus/battery_plus.dart';
-import 'package:android_id/android_id.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:disk_space_2/disk_space_2.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import '../config/server_config.dart';
 import 'ad_service.dart';
 import 'tablet_service.dart';
 
 class TelemetryService {
+  static final TelemetryService _instance = TelemetryService._internal();
+  factory TelemetryService() => _instance;
+  TelemetryService._internal();
+
+  static const _platform = MethodChannel('com.adscreen.kiosk/telemetry');
+
   final Dio _dio = Dio();
   final _battery = Battery();
-  final _androidIdPlugin = const AndroidId();
+  final _deviceInfo = DeviceInfoPlugin();
   Timer? _timer;
+  bool _started = false;
 
-  // BASE_URL login is simpler here: hardcode check or use environment.
-  // Debug vs Release logic can be handled by kReleaseMode
-  String get baseUrl => kReleaseMode ? "https://adscreen.az/" : "http://10.10.3.61:3000/";
+  // Use centralized ServerConfig instead of hardcoded URLs
+  String get baseUrl => ServerConfig.baseUrl;
 
   void start() {
-    // Check permissions first? Assuming logic handles it in UI or here.
-    _timer = Timer.periodic(const Duration(seconds: 60), (timer) => _sendTelemetry());
+    if (_started) return;
+    _started = true;
+    _timer = Timer.periodic(const Duration(seconds: 15), (timer) => _sendTelemetry());
     _sendTelemetry(); // Send immediately
+    print("TelemetryService: Started sending to $baseUrl every 15s");
   }
 
   Future<String> _getIpAddress() async {
@@ -39,61 +48,158 @@ class TelemetryService {
     return "Unknown";
   }
 
+  /// Get real battery temperature from native Android channel
+  Future<double> _getBatteryTemperature() async {
+    try {
+      if (Platform.isAndroid) {
+        final temp = await _platform.invokeMethod('getBatteryTemperature');
+        if (temp is double) return temp;
+        if (temp is int) return temp.toDouble();
+      }
+    } catch (e) {
+      print("TelemetryService: getBatteryTemperature error: $e");
+    }
+    return 0.0;
+  }
+
+  /// Get real screen brightness from native Android channel
+  Future<double> _getScreenBrightness() async {
+    try {
+      if (Platform.isAndroid) {
+        final brightness = await _platform.invokeMethod('getScreenBrightness');
+        if (brightness is double) return brightness;
+        if (brightness is int) return brightness.toDouble();
+      }
+    } catch (e) {
+      print("TelemetryService: getScreenBrightness error: $e");
+    }
+    return 0.0;
+  }
+
+  /// Get real WiFi signal strength (RSSI) from native Android channel
+  Future<String> _getSignalStrength() async {
+    try {
+      if (Platform.isAndroid) {
+        final rssi = await _platform.invokeMethod('getWifiRssi');
+        if (rssi is int) {
+          if (rssi >= -50) return "Excellent ($rssi dBm)";
+          if (rssi >= -60) return "Good ($rssi dBm)";
+          if (rssi >= -70) return "Fair ($rssi dBm)";
+          return "Weak ($rssi dBm)";
+        }
+      }
+    } catch (e) {
+      print("TelemetryService: getWifiRssi error: $e");
+    }
+    return "Unknown";
+  }
+
   Future<void> _sendTelemetry() async {
     try {
-      final String? deviceId = await _androidIdPlugin.getId();
+      final tabletId = TabletService().tabletId;
+      if (tabletId == null) {
+        print("TelemetryService: No tablet ID yet, skipping.");
+        return;
+      }
+
       final int batteryLevel = await _battery.batteryLevel;
-      
-      // Get Location & Speed
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      
+      final batteryState = await _battery.batteryState;
+
+      // Get Location & Speed with Timeout
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 8),
+        );
+      } catch (e) {
+        print("TelemetryService: GPS Timeout or Error: $e");
+      }
+
+      final lat = position?.latitude ?? 0.0;
+      final lng = position?.longitude ?? 0.0;
+      final speed = position?.speed ?? 0.0;
+
       // Get IP
       String ip = await _getIpAddress();
-      
-      // Get Storage
+
+      // Get Storage (REAL)
       double? freeSpace = await DiskSpace.getFreeDiskSpace;
       double? totalSpace = await DiskSpace.getTotalDiskSpace;
-      
-      // Get Connectivity
+
+      // Get Connectivity (REAL)
       var connectivityResult = await (Connectivity().checkConnectivity());
-      String networkType = connectivityResult.toString().split('.').last;
+      String networkType = "None";
+      if (connectivityResult == ConnectivityResult.mobile) networkType = "Cellular";
+      else if (connectivityResult == ConnectivityResult.wifi) networkType = "WiFi";
+      else if (connectivityResult == ConnectivityResult.ethernet) networkType = "Ethernet";
+
+      // Get device info (REAL)
+      String deviceModel = "Unknown";
+      String osVersion = "Unknown";
+      if (Platform.isAndroid) {
+        final androidInfo = await _deviceInfo.androidInfo;
+        deviceModel = "${androidInfo.brand} ${androidInfo.model}";
+        osVersion = "Android ${androidInfo.version.release}";
+      }
+
+      // Get REAL sensor values from native Android
+      final double temperature = await _getBatteryTemperature();
+      final double brightness = await _getScreenBrightness();
+      final String signalStrength = await _getSignalStrength();
 
       final payload = {
-        "tablet_id": TabletService().tabletId ?? "REAL_DEVICE_${deviceId?.substring(0, 5) ?? 'UNKNOWN'}",
+        "tablet_id": tabletId,
         "battery_percent": batteryLevel,
-        "latitude": position.latitude,
-        "longitude": position.longitude,
-        "speed": position.speed,
+        "is_charging": batteryState == BatteryState.charging || batteryState == BatteryState.full,
+        "charging_status": batteryState.toString().split('.').last,
+        "latitude": lat,
+        "longitude": lng,
+        "speed": speed,
         "ip_address": ip,
-        "storage_free": ((freeSpace ?? 0) / 1024).toStringAsFixed(1), // GB
-        "storage_total": ((totalSpace ?? 0) / 1024).toStringAsFixed(1), // GB
+        "storage_free": "${((freeSpace ?? 0) / 1024).toStringAsFixed(1)} GB",
+        "storage_total": "${((totalSpace ?? 0) / 1024).toStringAsFixed(1)} GB",
         "network_type": networkType,
+        "device_model": deviceModel,
+        "os_version": osVersion,
         "current_creative": AdService().currentCreative,
         "impressions_today": AdService().impressionsToday,
         "loop_status": AdService().loopStatus,
-        "temperature": "38°C", // Mocked
-        "brightness": 0.8, // Mocked
-        "signal_strength": "Excellent", // Mocked
-        "data_usage": "1.2 GB", // Mocked
-        "driver_id": "DRV-9921", // Mocked
+        "temperature": "${temperature.toStringAsFixed(1)}°C",
+        "brightness": brightness,
+        "signal_strength": signalStrength,
       };
 
-      await _dio.post(
-        "$baseUrl/api/update_tablet_status",
+      final response = await _dio.post(
+        "${ServerConfig.updateEndpoint}",
         data: payload,
       );
-      
-      if (kDebugMode) {
-        print("Telemetry Sent: $payload to $baseUrl");
+
+      // Handle server response (lock commands, etc.)
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data;
+        if (data is Map) {
+          // Handle lock state from server
+          final bool? locked = data['locked'] as bool?;
+          final String? unlockPin = data['unlock_pin']?.toString();
+          if (locked != null) {
+            TabletService().updateLockState(locked, unlockPin);
+          }
+        }
       }
+
+      print("TelemetryService: Sent real data → battery=$batteryLevel%, loc=($lat,$lng), temp=${temperature.toStringAsFixed(1)}°C, signal=$signalStrength");
+
+      // Also push latest data via Socket.IO for real-time updates
+      AdService().emitTelemetry(payload);
+
     } catch (e) {
-      if (kDebugMode) {
-        print("Telemetry Error: $e");
-      }
+      print("TelemetryService Error: $e");
     }
   }
 
   void stop() {
     _timer?.cancel();
+    _started = false;
   }
 }
