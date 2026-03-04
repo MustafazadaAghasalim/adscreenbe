@@ -39,6 +39,22 @@ class DeviceSettingsService {
   // ─── Default values for all 50 settings ─────────────────────────
   static const Map<String, dynamic> _defaults = {
     // Display & UI
+    'navbarThemeColor': '#1A1A1A',
+    'navbarButtons': [
+      {'id': 'btn-1', 'label': 'Interactivity', 'actionId': 'interactivity'},
+      {'id': 'btn-2', 'label': 'Surveys', 'actionId': 'surveys'},
+      {'id': 'btn-3', 'label': 'Games', 'actionId': 'games'}
+    ],
+    'navbarTextColor': '#FFFFFF',
+    'navbarQrUrl': 'https://adscreen.az',
+    'navbarWebsiteText': 'adscreen.az',
+    'navbarPhoneText': '+994 51 504 23 23',
+    'navbarTimerTextColor': '#FFFFFF',
+    'navbarTimerBorderColor': '#7C3AED',
+    'navbarTimerStrokeWidth': 5,
+    'navbarShowAdscreenLogo': true,
+    'navbarShowMastercardLogo': true,
+    'navbarShowVisaLogo': false,
     'screenDimScheduleEnabled': false,
     'screenDimStart': '22:00',
     'screenDimEnd': '06:00',

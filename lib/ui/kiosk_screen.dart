@@ -16,6 +16,7 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:kiosk_mode/kiosk_mode.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../config/server_config.dart';
 import '../admin_unlock_dialog.dart';
@@ -23,6 +24,7 @@ import 'modern_pin_dialog.dart'; // For ModernPinKey widget used by _RemoteLockO
 import '../services/security_service.dart';
 
 // === NEW IMPORTS ===
+import '../services/device_settings_service.dart';
 import '../services/proof_of_play_service.dart';
 import '../services/heatmap_telemetry_service.dart';
 import '../services/isolate_prefetch_service.dart';
@@ -528,111 +530,239 @@ class _AdContentState extends State<_AdContent> {
   }
 }
 
+/// Helper to parse hex color strings from backend settings.
+Color _parseColor(String? hex, Color fallback) {
+  if (hex == null || hex.isEmpty) return fallback;
+  try {
+    return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+  } catch (_) {
+    return fallback;
+  }
+}
+
 class BottomBar extends StatelessWidget {
   final VoidCallback onAdminRequest;
   const BottomBar({super.key, required this.onAdminRequest});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80, // Fixed height for Stack calculation
-      color: const Color(0xFF111111),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // 1. Left Section (QR + Text)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  color: Colors.white,
-                  child: Image.asset(
-                    'assets/images/exported_qrcode_image_600.png',
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_,__,___) => const Icon(Icons.qr_code, color: Colors.black, size: 50),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return StreamBuilder<Map<String, dynamic>>(
+      stream: DeviceSettingsService().settingsStream,
+      initialData: DeviceSettingsService().currentSettings,
+      builder: (context, snapshot) {
+        final settings = snapshot.data ?? {};
+
+        // === Parse all navbar settings ===
+        final Color bgColor = _parseColor(
+            settings['navbarThemeColor']?.toString(), const Color(0xFF111111));
+        final Color textColor = _parseColor(
+            settings['navbarTextColor']?.toString(), Colors.white);
+        final String qrUrl =
+            settings['navbarQrUrl']?.toString() ?? 'https://adscreen.az';
+        final String websiteText =
+            settings['navbarWebsiteText']?.toString() ?? 'adscreen.az';
+        final String phoneText =
+            settings['navbarPhoneText']?.toString() ?? '+994 51 504 23 23';
+        final Color timerTextColor = _parseColor(
+            settings['navbarTimerTextColor']?.toString(), Colors.white);
+        final Color timerBorderColor = _parseColor(
+            settings['navbarTimerBorderColor']?.toString(),
+            Colors.deepPurpleAccent);
+        final int timerStrokeWidth =
+            (settings['navbarTimerStrokeWidth'] as num?)?.toInt() ?? 5;
+        final bool showAdscreenLogo =
+            settings['navbarShowAdscreenLogo'] ?? true;
+        final bool showMastercardLogo =
+            settings['navbarShowMastercardLogo'] ?? true;
+        final bool showVisaLogo =
+            settings['navbarShowVisaLogo'] ?? false;
+        final List<dynamic> rawButtons = settings['navbarButtons'] ?? [];
+
+        return Container(
+          height: 80,
+          color: bgColor,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // ─── LEFT: QR Code + Contact Info ───
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      "adscreen.az",
-                      style: TextStyle(
+                  children: [
+                    // Dynamic QR Code
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        fontFamily: 'Kinetika', // New Font
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: QrImageView(
+                        data: qrUrl,
+                        version: QrVersions.auto,
+                        size: 50,
+                        backgroundColor: Colors.white,
+                        errorStateBuilder: (ctx, err) => const Icon(
+                            Icons.qr_code,
+                            color: Colors.black,
+                            size: 50),
                       ),
                     ),
-                    SizedBox(height: 2),
-                    Text(
-                      "+994 51 504 23 23",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Kinetika', // New Font
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
+                    const SizedBox(width: 16),
+                    // Contact Info
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          websiteText,
+                          style: TextStyle(
+                            color: textColor,
+                            fontFamily: 'Kinetika',
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          phoneText,
+                          style: TextStyle(
+                            color: textColor.withOpacity(0.85),
+                            fontFamily: 'Kinetika',
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // 2. Center Section (Logos) - Perfectly Centered via Stack
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/images/adscreen_logo_new.png',
-                  height: 48, 
-                  fit: BoxFit.contain,
-                  errorBuilder: (_,__,___) => const Text("ADSCREEN", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                ),
-                const SizedBox(width: 20),
-                // Vertical Divider
-                Container(width: 1, height: 32, color: Colors.white54),
-                const SizedBox(width: 20),
-                // Mastercard Logo -> THE ONLY EXIT (3s Hold)
-                _MastercardExitTrigger(
+              // ─── CENTER: Logos + Custom Buttons ───
+              Align(
+                alignment: Alignment.center,
+                child: _MastercardExitTrigger(
                   onAdminRequest: onAdminRequest,
-                  child: Image.asset(
-                    'assets/images/Mastercard-Logo.wine-2 1.png',
-                    height: 36,
-                    errorBuilder: (_,__,___) => const Icon(Icons.credit_card, size: 30, color: Colors.orange),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Adscreen Logo
+                      if (showAdscreenLogo)
+                        Image.asset(
+                          'assets/images/adscreen_logo_new.png',
+                          height: 48,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Text(
+                            "ADSCREEN",
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontFamily: 'Kinetika',
+                            ),
+                          ),
+                        ),
+                      if (showAdscreenLogo &&
+                          (showMastercardLogo || showVisaLogo ||
+                              rawButtons.isNotEmpty)) ...[
+                        const SizedBox(width: 20),
+                        Container(
+                            width: 1,
+                            height: 32,
+                            color: textColor.withOpacity(0.4)),
+                        const SizedBox(width: 20),
+                      ],
+                      // Mastercard Logo
+                      if (showMastercardLogo)
+                        Image.asset(
+                          'assets/images/Mastercard-Logo.wine-2 1.png',
+                          height: 36,
+                          errorBuilder: (_, __, ___) => const Icon(
+                              Icons.credit_card,
+                              size: 30,
+                              color: Colors.orange),
+                        ),
+                      if (showMastercardLogo && (showVisaLogo || rawButtons.isNotEmpty))
+                        const SizedBox(width: 16),
+                      // Visa Logo
+                      if (showVisaLogo)
+                        Text(
+                          'VISA',
+                          style: TextStyle(
+                            color: const Color(0xFF1A1F71),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            fontStyle: FontStyle.italic,
+                            fontFamily: 'Kinetika',
+                          ),
+                        ),
+                      if (showVisaLogo && rawButtons.isNotEmpty)
+                        const SizedBox(width: 16),
+                      // Dynamic Nav Buttons
+                      ...rawButtons.map((btn) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                KioskHaptics.lightTap();
+                                print(
+                                    'Navbar Button: ${btn['actionId']}');
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: textColor.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color: textColor.withOpacity(0.1)),
+                                ),
+                                child: Text(
+                                  btn['label']?.toString() ?? '',
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Kinetika',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // 3. Right Section (Volume + Timer)
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const VolumeControlWidget(),
-                const SizedBox(width: 24),
-                const CircularTimerWidget(),
-              ],
-            ),
+              // ─── RIGHT: Volume + Timer ───
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const VolumeControlWidget(),
+                    const SizedBox(width: 24),
+                    CircularTimerWidget(
+                      textColor: timerTextColor,
+                      borderColor: timerBorderColor,
+                      strokeWidth: timerStrokeWidth.toDouble(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -815,7 +945,16 @@ class _ChatDialogState extends State<ChatDialog> {
 }
 
 class CircularTimerWidget extends StatefulWidget {
-  const CircularTimerWidget({super.key});
+  final Color textColor;
+  final Color borderColor;
+  final double strokeWidth;
+
+  const CircularTimerWidget({
+    super.key,
+    this.textColor = Colors.white,
+    this.borderColor = Colors.deepPurpleAccent,
+    this.strokeWidth = 5,
+  });
 
   @override
   State<CircularTimerWidget> createState() => _CircularTimerWidgetState();
@@ -824,11 +963,6 @@ class CircularTimerWidget extends StatefulWidget {
 class _CircularTimerWidgetState extends State<CircularTimerWidget> {
   Timer? _timer;
   int _secondsActive = 0;
-  // Simulating a "total duration" for the progress ring visual effect. 
-  // Since it counts up indefinitely, we can just animation a spinner or standard progress.
-  // Visual reference shows a determinate progress ring (purple segment). 
-  // We'll simulate a 60-second loop for the visual ring or just static for now.
-  // Actually, visual shows 2:23 with ~3/4 circle. Let's make it a 60s loop visual or similar.
 
   @override
   void initState() {
@@ -850,13 +984,11 @@ class _CircularTimerWidgetState extends State<CircularTimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final minutes = (_secondsActive ~/ 60).toString(); // remove padLeft for visual match if single digit? Visual: 2:23
+    final minutes = (_secondsActive ~/ 60).toString();
     final seconds = (_secondsActive % 60).toString().padLeft(2, '0');
-    
-    // Progress calculation for 60s loop
     final progress = (_secondsActive % 60) / 60.0;
 
-    return Container(
+    return SizedBox(
       width: 60,
       height: 60,
       child: Stack(
@@ -867,9 +999,9 @@ class _CircularTimerWidgetState extends State<CircularTimerWidget> {
             width: 50,
             height: 50,
             child: CircularProgressIndicator(
-              value: 1.0, // Full circle background
-              strokeWidth: 5,
-              color: Colors.purple.withOpacity(0.2),
+              value: 1.0,
+              strokeWidth: widget.strokeWidth,
+              color: widget.borderColor.withOpacity(0.2),
             ),
           ),
           // Progress Ring
@@ -877,17 +1009,17 @@ class _CircularTimerWidgetState extends State<CircularTimerWidget> {
             width: 50,
             height: 50,
             child: CircularProgressIndicator(
-              value: progress, 
-              strokeWidth: 5,
-              color: Colors.deepPurpleAccent, // Visual match
+              value: progress,
+              strokeWidth: widget.strokeWidth,
+              color: widget.borderColor,
               backgroundColor: Colors.transparent,
             ),
           ),
           // Time Text
           Text(
             "$minutes:$seconds",
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: widget.textColor,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

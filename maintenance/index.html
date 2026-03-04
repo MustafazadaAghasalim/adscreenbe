@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adscreen — We'll Be Right Back</title>
+    <meta name="description" content="Adscreen is temporarily offline for maintenance. We'll be back shortly!" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ─── Reset & Base ─────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-start: #0f0c29;
+            --bg-mid: #302b63;
+            --bg-end: #24243e;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #f0f0f5;
+            --text-secondary: rgba(240, 240, 245, 0.65);
+            --accent: #7c5cfc;
+            --accent-light: #a78bfa;
+            --accent-glow: rgba(124, 92, 252, 0.35);
+            --radius: 24px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+            color: var(--text-primary);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ─── Animated Background Orbs ──────────────────────── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb--1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #7c5cfc 0%, transparent 70%);
+            top: -150px;
+            left: -100px;
+            animation: orbit1 18s ease-in-out infinite alternate;
+        }
+
+        .orb--2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #e879f9 0%, transparent 70%);
+            bottom: -100px;
+            right: -80px;
+            animation: orbit2 22s ease-in-out infinite alternate;
+        }
+
+        .orb--3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #38bdf8 0%, transparent 70%);
+            top: 50%;
+            left: 60%;
+            animation: orbit3 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes orbit1 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(120px, 80px) scale(1.15);
+            }
+        }
+
+        @keyframes orbit2 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(-100px, -60px) scale(1.1);
+            }
+        }
+
+        @keyframes orbit3 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(-80px, 60px) scale(0.9);
+            }
+        }
+
+        /* ─── Main Card ─────────────────────────────────────── */
+        .card {
+            position: relative;
+            z-index: 1;
+            max-width: 520px;
+            width: 90%;
+            padding: 48px 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            text-align: center;
+            animation: cardEntry 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px) scale(0.97);
+        }
+
+        @keyframes cardEntry {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ─── Logo ──────────────────────────────────────────── */
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+        }
+
+        /* ─── Icon ──────────────────────────────────────────── */
+        .icon-wrap {
+            margin-bottom: 28px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .icon-wrap svg {
+            width: 72px;
+            height: 72px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        /* ─── Typography ────────────────────────────────────── */
+        h1 {
+            font-size: 1.65rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 14px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .body-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            font-weight: 400;
+        }
+
+        /* ─── Button ────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            font-family: var(--font);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), #9f7afa);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 4px 20px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .btn:hover svg {
+            transform: rotate(180deg);
+        }
+
+        /* ─── Status Bar ────────────────────────────────────── */
+        .status {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status__dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        /* ─── Footer ────────────────────────────────────────── */
+        .footer {
+            position: fixed;
+            bottom: 24px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 500;
+            z-index: 1;
+            letter-spacing: 0.3px;
+        }
+
+        /* ─── Responsive ────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .card {
+                padding: 36px 24px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 1.35rem;
+            }
+
+            .body-text {
+                font-size: 0.88rem;
+            }
+
+            .icon-wrap svg {
+                width: 56px;
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 1.35rem;
+            }
+
+            .orb--1 {
+                width: 300px;
+                height: 300px;
+            }
+
+            .orb--2 {
+                width: 250px;
+                height: 250px;
+            }
+
+            .orb--3 {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 28px 18px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Animated background orbs -->
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+
+    <!-- Main Card -->
+    <main class="card" role="main">
+        <!-- Logo -->
+        <div class="logo">
+            <span class="logo__dot"></span>
+            Adscreen
+        </div>
+
+        <!-- Floating Icon -->
+        <div class="icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Coffee cup body -->
+                <rect x="14" y="24" width="34" height="32" rx="6" fill="rgba(124,92,252,0.2)" stroke="#a78bfa"
+                    stroke-width="2" />
+                <!-- Handle -->
+                <path d="M48 32 C56 32, 56 48, 48 48" stroke="#a78bfa" stroke-width="2" fill="none"
+                    stroke-linecap="round" />
+                <!-- Steam lines -->
+                <path d="M24 18 C24 14, 28 14, 28 18" stroke="#a78bfa" stroke-width="1.8" fill="none"
+                    stroke-linecap="round" opacity="0.6">
+                    <animate attributeName="d"
+                        values="M24 18 C24 14, 28 14, 28 18;M24 16 C24 10, 28 10, 28 16;M24 18 C24 14, 28 14, 28 18"
+                        dur="2.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.5s" repeatCount="indefinite" />
+                </path>
+                <path d="M32 16 C32 12, 36 12, 36 16" stroke="#a78bfa" stroke-width="1.8" fill="none"
+                    stroke-linecap="round" opacity="0.5">
+                    <animate attributeName="d"
+                        values="M32 16 C32 12, 36 12, 36 16;M32 12 C32 6, 36 6, 36 12;M32 16 C32 12, 36 12, 36 16"
+                        dur="3s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.5;0.15;0.5" dur="3s" repeatCount="indefinite" />
+                </path>
+                <path d="M40 19 C40 15, 44 15, 44 19" stroke="#a78bfa" stroke-width="1.8" fill="none"
+                    stroke-linecap="round" opacity="0.4">
+                    <animate attributeName="d"
+                        values="M40 19 C40 15, 44 15, 44 19;M40 15 C40 9, 44 9, 44 15;M40 19 C40 15, 44 15, 44 19"
+                        dur="2.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.8s" repeatCount="indefinite" />
+                </path>
+                <!-- Saucer -->
+                <ellipse cx="31" cy="58" rx="22" ry="3" fill="rgba(124,92,252,0.15)" stroke="#a78bfa"
+                    stroke-width="1.5" />
+            </svg>
+        </div>
+
+        <!-- Content -->
+        <h1>Adscreen is taking a quick coffee break ☕</h1>
+        <p class="body-text">
+            We're doing some behind-the-scenes maintenance to make things even better for you.
+            Don't worry — this isn't a scary error! We'll be back online shortly.
+        </p>
+
+        <!-- CTA -->
+        <button class="btn" onclick="location.reload()" aria-label="Refresh the page">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M1 1v5h5" />
+                <path d="M3.51 10a6 6 0 1 0 .7-6.7L1 6" />
+            </svg>
+            Refresh Page
+        </button>
+
+        <!-- Status -->
+        <div class="status">
+            <span class="status__dot"></span>
+            Maintenance in progress — hang tight!
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2026 Adscreen &middot; All rights reserved
+    </footer>
+
+</body>
+
+</html>
