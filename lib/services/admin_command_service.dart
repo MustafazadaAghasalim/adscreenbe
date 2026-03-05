@@ -18,6 +18,8 @@ class AdminCommandService {
   factory AdminCommandService() => _instance;
   AdminCommandService._internal();
 
+  static const MethodChannel _platform = MethodChannel('com.adscreen.kiosk/telemetry');
+
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
   Timer? _heartbeatTimer;
@@ -129,8 +131,7 @@ class AdminCommandService {
           break;
 
         case 'reboot':
-          _commandController.add(AdminCommand('reboot', data));
-          _ack(data);
+          unawaited(_handleReboot(data));
           break;
 
         case 'screenshot':
@@ -180,6 +181,39 @@ class AdminCommandService {
     } catch (e) {
       print('AdminWS: Parse error: $e  raw=$raw');
     }
+  }
+
+  Future<void> _handleReboot(Map<String, dynamic> data) async {
+    String? errorMessage;
+    var success = false;
+
+    try {
+      final result = await _platform.invokeMethod('rebootDevice');
+      success = result == true;
+      if (!success) {
+        errorMessage = 'rebootDevice returned non-true result: $result';
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+      print('AdminWS: rebootDevice invoke failed: $errorMessage');
+    }
+
+    _send({
+      'type': 'command_ack',
+      'tablet_id': TabletService().tabletId,
+      'command': 'reboot',
+      'success': success,
+      if (errorMessage != null) 'error': errorMessage,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    if (success) {
+      _ack(data);
+      return;
+    }
+
+    // Keep legacy stream dispatch for any UI-level fallback handling.
+    _commandController.add(AdminCommand('reboot', data));
   }
 
   void _ack(Map<String, dynamic> original) {

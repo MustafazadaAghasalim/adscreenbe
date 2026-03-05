@@ -138,6 +138,22 @@ class KioskForegroundService : Service() {
                     "command", "admin_command" -> {
                         commandExecutor.execute(message)
                     }
+                    "reboot", "lock", "unlock", "refresh_ads", "brightness", "screen_wipe" -> {
+                        // Normalize direct typed commands into CommandExecutor shape.
+                        // Example incoming payload: { type: "reboot", command: "reboot", ... }
+                        // If command is missing, derive from type.
+                        if (!message.has("command") || message.optString("command").isEmpty()) {
+                            val normalizedCommand = when (type) {
+                                "screen_wipe" -> "force_refresh"
+                                "refresh_ads" -> "force_refresh"
+                                else -> type
+                            }
+                            message.put("command", normalizedCommand)
+                        } else if (message.optString("command") == "screen_wipe") {
+                            message.put("command", "force_refresh")
+                        }
+                        commandExecutor.execute(message)
+                    }
                     "settings_update" -> {
                         commandExecutor.execute(message)
                     }
