@@ -164,6 +164,16 @@ class AdminCommandService {
           break;
 
         default:
+          // Handle wrapped admin commands: { type: 'admin_command', command: 'reboot', ... }
+          if (type == 'admin_command' && data['command'] != null) {
+            final innerCommand = data['command'] as String;
+            print('AdminWS: Unwrapping admin_command → $innerCommand');
+            // Re-dispatch with the inner command as type
+            final rewrapped = Map<String, dynamic>.from(data);
+            rewrapped['type'] = innerCommand;
+            _handleMessage(jsonEncode(rewrapped));
+            return;
+          }
           print('AdminWS: Unknown command type: $type');
           _commandController.add(AdminCommand(type, data));
       }

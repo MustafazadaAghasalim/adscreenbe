@@ -51,6 +51,7 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   List<Ad> _ads = [];
   bool _isLoading = true;
   StreamSubscription? _subscription;
+  String? _activeActionId; // NEW: Track currently active action from navbar
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -214,6 +215,11 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
                         flex: 120,
                         child: BottomBar(
                           onAdminRequest: () => _showPasswordDialog(),
+                          onActionTap: (actionId) {
+                            setState(() {
+                              _activeActionId = actionId;
+                            });
+                          },
                         ),
                       ),
                     ],
@@ -222,6 +228,13 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
                 if (isLocked)
                   Positioned.fill(
                     child: _RemoteLockOverlay(expectedPin: pin),
+                  ),
+                if (_activeActionId != null)
+                  Positioned.fill(
+                    child: _ActionOverlay(
+                      actionId: _activeActionId!,
+                      onClose: () => setState(() => _activeActionId = null),
+                    ),
                   ),
               ],
             ),
@@ -542,7 +555,12 @@ Color _parseColor(String? hex, Color fallback) {
 
 class BottomBar extends StatelessWidget {
   final VoidCallback onAdminRequest;
-  const BottomBar({super.key, required this.onAdminRequest});
+  final Function(String) onActionTap;
+  const BottomBar({
+    super.key,
+    required this.onAdminRequest,
+    required this.onActionTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -711,8 +729,7 @@ class BottomBar extends StatelessWidget {
                             child: InkWell(
                               onTap: () {
                                 KioskHaptics.lightTap();
-                                print(
-                                    'Navbar Button: ${btn['actionId']}');
+                                onActionTap(btn['actionId']?.toString() ?? 'custom');
                               },
                               borderRadius: BorderRadius.circular(12),
                               child: Container(
@@ -756,6 +773,9 @@ class BottomBar extends StatelessWidget {
                       borderColor: timerBorderColor,
                       strokeWidth: timerStrokeWidth.toDouble(),
                     ),
+                    const SizedBox(width: 12),
+                    // Sync Pulse - flashes when data updates
+                    _SyncPulseIcon(textColor: textColor),
                   ],
                 ),
               ),
@@ -1401,3 +1421,132 @@ class _LockBackgroundPainter extends CustomPainter {
 }
 
 
+
+/// NEW: Overlay shown when a navbar button is pressed
+class _ActionOverlay extends StatelessWidget {
+  final String actionId;
+  final VoidCallback onClose;
+
+  const _ActionOverlay({required this.actionId, required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.95),
+      padding: const EdgeInsets.all(40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getIconForAction(actionId),
+            size: 120,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 32),
+          Text(
+            actionId.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "This component is being synchronized in real-time.\nMore interactive features coming soon.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white70, fontSize: 24),
+          ),
+          const SizedBox(height: 64),
+          ElevatedButton(
+            onPressed: onClose,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white12,
+              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: Colors.white30),
+              ),
+            ),
+            child: const Text("CLOSE & RESUME ADS",
+                style: TextStyle(color: Colors.white, fontSize: 20)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getIconForAction(String id) {
+    switch (id.toLowerCase()) {
+      case 'games': return Icons.videogame_asset_outlined;
+      case 'surveys': return Icons.poll_outlined;
+      case 'interactivity': return Icons.touch_app_outlined;
+      default: return Icons.apps_outlined;
+    }
+  }
+}
+
+/// NEW: A small glowing pulse that indicates settings were received
+class _SyncPulseIcon extends StatefulWidget {
+  final Color textColor;
+  const _SyncPulseIcon({required this.textColor});
+
+  @override
+  State<_SyncPulseIcon> createState() => _SyncPulseIconState();
+}
+
+class _SyncPulseIconState extends State<_SyncPulseIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _sub = DeviceSettingsService().settingsStream.listen((_) {
+      if (mounted) {
+        _pulseController.forward(from: 0).then((_) {
+          _pulseController.reverse();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (context, child) {
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: widget.textColor.withOpacity(0.2 + (0.8 * _pulseController.value)),
+            boxShadow: [
+              if (_pulseController.value > 0.1)
+                BoxShadow(
+                  color: widget.textColor.withOpacity(0.5 * _pulseController.value),
+                  blurRadius: 10 * _pulseController.value,
+                  spreadRadius: 2 * _pulseController.value,
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
