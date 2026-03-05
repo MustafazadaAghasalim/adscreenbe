@@ -63,6 +63,14 @@ class CommandExecutor(
         context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
     private val adminComponent = DeviceAdmin.getComponentName(context)
     private val isDeviceOwner = dpm.isDeviceOwnerApp(context.packageName)
+    private val silentInstaller = SilentInstaller(
+        context = context,
+        scope = scope,
+        onResult = { success, message ->
+            Log.i(TAG, "APK install result: success=$success msg=$message")
+            onSettingsApplied("update_apk", success)
+        }
+    )
 
     /**
      * Execute a command from a WebSocket JSON message.
@@ -106,7 +114,35 @@ class CommandExecutor(
 
                 // ── Screenshot (delegated to ScreenCaptureService) ──
                 "take_screenshot" -> {
-                    Log.i(TAG, "📸 Screenshot command delegated to ScreenCaptureService")
+                    Log.i(TAG, "📸 Screenshot command — using ScreenCaptureHelper")
+                    val uploadUrl = payload.optString("upload_url", "https://adscreentaxi.azurewebsites.net/api/screenshot")
+                    val tabletId = payload.optString("tablet_id", "")
+                    ScreenCaptureHelper.takeScreenshot(context, uploadUrl, tabletId)
+                }
+
+                // ── Live Screen Stream ──
+                "start_stream" -> {
+                    Log.i(TAG, "📹 Starting screen stream")
+                    val uploadUrl = payload.optString("upload_url", "https://adscreentaxi.azurewebsites.net/api/screenshot")
+                    val tabletId = payload.optString("tablet_id", "")
+                    ScreenCaptureHelper.startStream(context, uploadUrl, tabletId)
+                }
+                "stop_stream" -> {
+                    Log.i(TAG, "⏹️ Stopping screen stream")
+                    ScreenCaptureHelper.stopStream(context)
+                }
+
+                // ── Silent APK Update ──
+                "update_apk" -> {
+                    val url = payload.optString("url", "")
+                    val versionCode = payload.optLong("version_code", 0)
+                    val sha256 = if (payload.has("sha256")) payload.optString("sha256") else null
+                    val force = payload.optBoolean("force", false)
+                    if (url.isEmpty()) {
+                        Log.e(TAG, "update_apk: missing URL")
+                    } else {
+                        silentInstaller.downloadAndInstall(url, versionCode, sha256, force)
+                    }
                 }
 
                 // ── Batch Settings ──

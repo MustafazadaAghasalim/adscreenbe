@@ -20,12 +20,24 @@ import android.view.WindowInsetsController
 import android.os.UserManager
 import android.view.MotionEvent
 import android.graphics.Rect
+import android.app.ActivityManager
+import com.example.adscreen.kiosk.ScreenCaptureHelper
+import com.example.adscreen.kiosk.SilentInstaller
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.adscreen.kiosk/telemetry"
     private val SETTINGS_CHANNEL = "com.adscreen.kiosk/settings"
+    private val MEMORY_CHANNEL = "com.example.adscreen/memory"
+    private val RESTART_CHANNEL = "com.example.adscreen/restart"
+    private val AUDIO_CHANNEL = "com.example.adscreen/audio"
+    private val CAPTURE_CHANNEL = "com.adscreen.kiosk/screen_capture"
+    private val INSTALL_CHANNEL = "com.adscreen.kiosk/silent_install"
     private var isKioskDesired = true // Default to true
     private val edgeThreshold = 40 // pixels from screen edge to block
+
+    companion object {
+        private const val REQUEST_CODE_PROJECTION = 9001
+    }
 
     override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
         if (isKioskDesired) {
@@ -256,6 +268,188 @@ class MainActivity : FlutterActivity() {
             }
         }
 
+        // ═══════════════════════════════════════════════════════════════════
+        //  MEMORY CHANNEL — Native memory monitoring & GC  
+        //  (Fixes orphan: Flutter side uses this but had no native handler)
+        // ═══════════════════════════════════════════════════════════════════
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, MEMORY_CHANNEL).setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "getMemoryInfo" -> {
+                        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                        val memInfo = ActivityManager.MemoryInfo()
+                        activityManager.getMemoryInfo(memInfo)
+                        val runtime = Runtime.getRuntime()
+                        result.success(mapOf(
+                            "totalMem" to memInfo.totalMem,
+                            "availMem" to memInfo.availMem,
+                            "lowMemory" to memInfo.lowMemory,
+                            "threshold" to memInfo.threshold,
+                            "javaHeapMax" to runtime.maxMemory(),
+                            "javaHeapUsed" to (runtime.totalMemory() - runtime.freeMemory()),
+                            "javaHeapFree" to runtime.freeMemory()
+                        ))
+                    }
+                    "forceGC" -> {
+                        System.gc()
+                        Runtime.getRuntime().gc()
+                        result.success(true)
+                    }
+                    "trimMemory" -> {
+                        // Trigger onTrimMemory callback at COMPLETE level
+                        val level = call.argument<Int>("level") ?: 80
+                        System.gc()
+                        result.success(true)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("ERROR", "Memory operation failed: ${e.message}", null)
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  RESTART CHANNEL — Hot restart scheduling
+        // ═══════════════════════════════════════════════════════════════════
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, RESTART_CHANNEL).setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "scheduleRestart" -> {
+                        val delayMs = call.argument<Int>("delayMs") ?: 0
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                            // Recreate the activity to force Flutter engine restart
+                            recreate()
+                        }, delayMs.toLong())
+                        result.success(true)
+                    }
+                    "getUptime" -> {
+                        val uptimeMs = android.os.SystemClock.elapsedRealtime()
+                        result.success(uptimeMs)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("ERROR", "Restart operation failed: ${e.message}", null)
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  AUDIO CHANNEL — Volume control for ad playback
+        // ═══════════════════════════════════════════════════════════════════
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, AUDIO_CHANNEL).setMethodCallHandler { call, result ->
+            try {
+                val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+                when (call.method) {
+                    "setVolume" -> {
+                        val volume = call.argument<Double>("volume") ?: 0.5
+                        val maxVol = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
+                        val targetVol = (volume * maxVol).toInt().coerceIn(0, maxVol)
+                        audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, targetVol, 0)
+                        result.success(true)
+                    }
+                    "getVolume" -> {
+                        val currentVol = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
+                        val maxVol = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
+                        result.success(currentVol.toDouble() / maxVol.toDouble())
+                    }
+                    "mute" -> {
+                        audioManager.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, 0, 0)
+                        result.success(true)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("ERROR", "Audio operation failed: ${e.message}", null)
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  SCREEN CAPTURE CHANNEL — Remote screenshot & streaming
+        // ═══════════════════════════════════════════════════════════════════
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CAPTURE_CHANNEL).setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "requestConsent" -> {
+                        ScreenCaptureHelper.requestProjection(this, REQUEST_CODE_PROJECTION)
+                        result.success(true)
+                    }
+                    "takeScreenshot" -> {
+                        val url = call.argument<String>("uploadUrl") ?: "https://adscreentaxi.azurewebsites.net/api/screenshot"
+                        val tabletId = call.argument<String>("tabletId") ?: "unknown"
+                        ScreenCaptureHelper.takeScreenshot(this, url, tabletId)
+                        result.success(true)
+                    }
+                    "startStream" -> {
+                        val url = call.argument<String>("uploadUrl") ?: "https://adscreentaxi.azurewebsites.net/api/screenshot"
+                        val tabletId = call.argument<String>("tabletId") ?: "unknown"
+                        ScreenCaptureHelper.startStream(this, url, tabletId)
+                        result.success(true)
+                    }
+                    "stopStream" -> {
+                        ScreenCaptureHelper.stopStream(this)
+                        result.success(true)
+                    }
+                    "hasConsent" -> {
+                        result.success(ScreenCaptureHelper.hasConsent(this))
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("ERROR", "Screen capture error: ${e.message}", null)
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  SILENT INSTALL CHANNEL — OTA APK updates
+        // ═══════════════════════════════════════════════════════════════════
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, INSTALL_CHANNEL).setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "installApk" -> {
+                        val url = call.argument<String>("url") ?: ""
+                        val versionCode = call.argument<Int>("versionCode")?.toLong() ?: 0L
+                        val sha256 = call.argument<String>("sha256")
+                        val force = call.argument<Boolean>("force") ?: false
+
+                        if (url.isEmpty()) {
+                            result.error("INVALID", "APK URL is required", null)
+                            return@setMethodCallHandler
+                        }
+
+                        val installer = SilentInstaller(
+                            context = this,
+                            scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO),
+                            onResult = { success, message ->
+                                android.util.Log.i("SilentInstall", "Result: success=$success msg=$message")
+                            }
+                        )
+                        installer.downloadAndInstall(url, versionCode, sha256, force)
+                        result.success(true)
+                    }
+                    "getVersionInfo" -> {
+                        val info = packageManager.getPackageInfo(packageName, 0)
+                        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            info.longVersionCode
+                        } else {
+                            @Suppress("DEPRECATION")
+                            info.versionCode.toLong()
+                        }
+                        result.success(mapOf(
+                            "versionName" to (info.versionName ?: "unknown"),
+                            "versionCode" to versionCode,
+                            "packageName" to packageName
+                        ))
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: Exception) {
+                result.error("ERROR", "Install error: ${e.message}", null)
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        //  SETTINGS CHANNEL
+        // ═══════════════════════════════════════════════════════════════════
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SETTINGS_CHANNEL).setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
@@ -341,6 +535,11 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Request screen capture consent on first launch (one-time)
+        if (!ScreenCaptureHelper.hasConsent(this)) {
+            ScreenCaptureHelper.requestProjection(this, REQUEST_CODE_PROJECTION)
+        }
+
         // Start MDM Background Service
         val serviceIntent = Intent(this, com.example.adscreen.kiosk.KioskForegroundService::class.java).apply {
             putExtra("SERVER_URL", "wss://adscreentaxi.azurewebsites.net/ws")
@@ -382,6 +581,15 @@ class MainActivity : FlutterActivity() {
 
         // Aggressive Fullscreen / Immersive Blocking
         hideSystemUI()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (ScreenCaptureHelper.handleResult(this, requestCode, resultCode, data, REQUEST_CODE_PROJECTION)) {
+            android.util.Log.i("MainActivity", "Screen capture consent obtained")
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun hideSystemUI() {

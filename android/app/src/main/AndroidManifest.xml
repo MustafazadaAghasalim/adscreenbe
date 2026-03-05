@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
@@ -70,6 +73,11 @@
         <service
             android:name=".kiosk.KioskForegroundService"
             android:foregroundServiceType="location"
+            android:exported="false" />
+
+        <service
+            android:name=".kiosk.ScreenCaptureService"
+            android:foregroundServiceType="mediaProjection"
             android:exported="false" />
 
         <receiver android:name=".kiosk.VolumeEnforcer" android:exported="false">
