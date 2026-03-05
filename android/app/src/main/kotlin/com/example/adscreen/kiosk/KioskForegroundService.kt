@@ -134,6 +134,12 @@ class KioskForegroundService : Service() {
                 val type = message.optString("type", "")
                 Log.d(TAG, "📩 Message received: type=$type")
 
+                val command = message.optString("command", "")
+                if (command.isNotEmpty()) {
+                    commandExecutor.execute(message)
+                    return@collect
+                }
+
                 when (type) {
                     "command", "admin_command" -> {
                         commandExecutor.execute(message)
