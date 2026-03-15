@@ -1,0 +1,251 @@
+###############################################################################
+#  RPi Infrastructure Stack — docker-compose.yml
+#  Deploys: Portainer · Tailscale · Nginx Proxy Manager · Watchtower
+#           Grafana · Prometheus · Node Exporter · Gitea · AdGuard Home
+###############################################################################
+
+networks:
+  infra:
+    driver: bridge
+
+volumes:
+  portainer_data:
+  npm_data:
+  npm_letsencrypt:
+  prometheus_data:
+  grafana_data:
+  gitea_data:
+  adguard_work:
+  adguard_conf:
+  tailscale_state:
+  filebrowser_db:
+  filebrowser_config:
+  uptime_kuma_data:
+
+services:
+  # ─── 1. Portainer CE ─────────────────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - infra
+
+  # ─── 2. Tailscale VPN ────────────────────────────────────────────────
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    restart: unless-stopped
+    hostname: rpi-cloud
+    environment:
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    networks:
+      - infra
+
+  # ─── 3. Nginx Proxy Manager ──────────────────────────────────────────
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - infra
+
+  # ─── 4. Watchtower (Auto-Update) ─────────────────────────────────────
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=86400  # Check every 24 hours
+      - WATCHTOWER_INCLUDE_STOPPED=false
+      - DOCKER_API_VERSION=1.41
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - infra
+
+  # ─── 5. Prometheus ───────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    networks:
+      - infra
+
+  # ─── 6. Node Exporter (System Metrics) ───────────────────────────────
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - infra
+
+  # ─── 6b. cAdvisor (Container Metrics) ───────────────────────────────
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    networks:
+      - infra
+
+  # ─── 7. Grafana ──────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3004:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - infra
+
+  # ─── 8. Gitea (Self-Hosted Git) ──────────────────────────────────────
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+      - "2222:22"
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__ROOT_URL=http://localhost:3001
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__SSH_PORT=2222
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - infra
+
+  # ─── 9. AdGuard Home (DNS + Ad Blocker) ──────────────────────────────
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguard
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3003:3000"     # Web UI — initial setup
+      - "8080:80"       # Web UI — after setup
+    volumes:
+      - adguard_work:/opt/adguardhome/work
+      - adguard_conf:/opt/adguardhome/conf
+    networks:
+      - infra
+
+  # ─── 10. FileBrowser (Web File Manager) ──────────────────────────────
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - /:/srv
+      - filebrowser_db:/database
+      - filebrowser_config:/config
+    networks:
+      - infra
+
+  # ─── 11. Dozzle (Real-time Docker Logs) ──────────────────────────────
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8088:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - infra
+
+  # ─── 12. Uptime Kuma (Monitoring & Alerts) ───────────────────────────
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3005:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      - infra
+
+  # ─── 13. Wetty (Web SSH Terminal) ────────────────────────────────────
+  wetty:
+    image: wettyoss/wetty
+    container_name: wetty
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    command: --base /
+    environment:
+      - SSHHOST=172.17.0.1
+      - SSHUSER=zynorex
+      - SSHPASS=15261526
+    networks:
+      - infra

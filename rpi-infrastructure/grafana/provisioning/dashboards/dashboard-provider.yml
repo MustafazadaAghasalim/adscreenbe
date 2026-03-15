@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: adscreen
+    orgId: 1
+    folder: ADSCREEN
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

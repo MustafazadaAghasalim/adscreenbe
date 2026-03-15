@@ -177,6 +177,10 @@ class MainActivity : FlutterActivity() {
                                 dpm.setStatusBarDisabled(adminName, false)
                                 dpm.setLockTaskFeatures(adminName, DevicePolicyManager.LOCK_TASK_FEATURE_GLOBAL_ACTIONS)
                                 dpm.clearUserRestriction(adminName, "no_adjust_volume")
+                                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_SAFE_BOOT)
+                                dpm.clearUserRestriction(adminName, "no_config_notifications")
+                                dpm.clearUserRestriction(adminName, "no_status_bar")
+                                dpm.clearPackagePersistentPreferredActivities(adminName, packageName)
                             }
                             result.success(true)
                         } catch (e: SecurityException) {
@@ -206,10 +210,12 @@ class MainActivity : FlutterActivity() {
                             // Ensure all restrictions are cleared before killing
                             if (dpm.isDeviceOwnerApp(packageName)) {
                                 dpm.setStatusBarDisabled(adminName, false)
-                                dpm.setLockTaskFeatures(
-                                    adminName,
-                                    DevicePolicyManager.LOCK_TASK_FEATURE_GLOBAL_ACTIONS
-                                )
+                                dpm.setLockTaskFeatures(adminName, DevicePolicyManager.LOCK_TASK_FEATURE_GLOBAL_ACTIONS)
+                                dpm.clearUserRestriction(adminName, "no_adjust_volume")
+                                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_SAFE_BOOT)
+                                dpm.clearUserRestriction(adminName, "no_config_notifications")
+                                dpm.clearUserRestriction(adminName, "no_status_bar")
+                                dpm.clearPackagePersistentPreferredActivities(adminName, packageName)
                             }
 
                             finishAndRemoveTask()
@@ -535,6 +541,21 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Bypass lock screen and turn screen on
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, null)
+        } else {
+            @Suppress("DEPRECATION")
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
+        }
+
         // Request screen capture consent on first launch (one-time)
         if (!ScreenCaptureHelper.hasConsent(this)) {
             ScreenCaptureHelper.requestProjection(this, REQUEST_CODE_PROJECTION)
@@ -571,10 +592,21 @@ class MainActivity : FlutterActivity() {
             dpm.addUserRestriction(adminName, "no_config_notifications")
             dpm.addUserRestriction(adminName, "no_status_bar")
             
+            // Set AdScreen as the default Home (Launcher)
+            val intentFilter = IntentFilter(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_HOME)
+                addCategory(Intent.CATEGORY_DEFAULT)
+            }
+            dpm.addPersistentPreferredActivity(
+                adminName,
+                intentFilter,
+                ComponentName(this, MainActivity::class.java)
+            )
+            
             // Start lock task mode immediately
             startLockTask()
             
-            android.util.Log.d("MainActivity", "Lock task mode started. Status bar disabled.")
+            android.util.Log.d("MainActivity", "Lock task mode started. Set as default launcher. Status bar disabled.")
         } else {
             android.util.Log.w("MainActivity", "Not device owner - kiosk features limited")
         }

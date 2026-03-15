@@ -49,6 +49,13 @@ class AdminCommandService {
     try {
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
 
+      // Catch initial connection errors (e.g. SocketException, DNS lookup failed)
+      // If we don't catch this, Dart will crash the whole app with an Unhandled Exception!
+      _channel!.ready.catchError((error) {
+        print('AdminWS: channel.ready error: $error');
+        _handleDisconnect(reason: 'channel.ready error: $error');
+      });
+
       _subscription = _channel!.stream.listen(
         (message) => _handleMessage(message),
         onDone: () {

@@ -48,6 +48,17 @@ class BootReceiver : BroadcastReceiver() {
         // Use startForegroundService for Android 8+ (API 26+)
         ContextCompat.startForegroundService(context, serviceIntent)
 
+        // Launch the main activity
+        val activityIntent = Intent(context, com.example.adscreen.MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        try {
+            context.startActivity(activityIntent)
+            Log.i(TAG, "🚀 Launched MainActivity successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to launch MainActivity", e)
+        }
+
         // Re-schedule daily reboot if configured
         val rebootTime = prefs.getString("daily_reboot_time", null)
         if (!rebootTime.isNullOrEmpty()) {

@@ -106,8 +106,8 @@ class _ModernPinDialogState extends State<ModernPinDialog> with TickerProviderSt
       try {
         // Success: Exit Kiosk Mode Natively
         platform.invokeMethod('stopKiosk');
-        // Fully exit the app immediately
-        platform.invokeMethod('killApp');
+        // Gracefully instruct the OS to render the Home Screen
+        platform.invokeMethod('exitToHome');
         
         if (mounted) Navigator.pop(context);
       } catch (e) {
