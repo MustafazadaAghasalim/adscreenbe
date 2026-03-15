@@ -28,6 +28,7 @@ import '../services/device_settings_service.dart';
 import '../services/proof_of_play_service.dart';
 import '../services/heatmap_telemetry_service.dart';
 import '../services/isolate_prefetch_service.dart';
+import '../services/kiosk_lifecycle_observer.dart';
 import 'ux_widgets.dart';
 
 Future<void> toggleKiosk(bool enable) async {
@@ -164,12 +165,33 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   }
 
   Future<void> _handleAdminUnlock() async {
+    // 1. Unregister lifecycle observer FIRST to prevent it from re-enabling kiosk
+    KioskLifecycleObserver().unregister();
+
+    // 2. Stop Flutter kiosk_mode package
+    try {
+      await stopKioskMode();
+      print("Flutter kiosk mode stopped");
+    } catch (e) {
+      print("Error stopping Flutter kiosk mode: $e");
+    }
+
+    // 3. Restore system UI so user can navigate
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    // 4. Stop native lock task and kill app
     const platform = MethodChannel('com.adscreen.kiosk/telemetry');
     try {
       await platform.invokeMethod('stopKiosk');
+      // Small delay to let native side fully release lock task
+      await Future.delayed(const Duration(milliseconds: 300));
       await platform.invokeMethod('killApp');
     } catch (e) {
-      print("Error stopping kiosk: $e");
+      print("Error stopping native kiosk: $e");
+      // Fallback: try exitToHome if killApp fails
+      try {
+        await platform.invokeMethod('exitToHome');
+      } catch (_) {}
     }
   }
 

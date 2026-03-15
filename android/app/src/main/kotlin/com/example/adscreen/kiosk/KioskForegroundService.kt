@@ -21,7 +21,7 @@ import org.json.JSONObject
  *
  * START:
  *   val intent = Intent(this, KioskForegroundService::class.java)
- *   intent.putExtra("SERVER_URL", "wss://adscreentaxi.azurewebsites.net/ws")
+ *   intent.putExtra("SERVER_URL", "wss://adscreen.az/ws")
  *   ContextCompat.startForegroundService(this, intent)
  *
  * PERMISSIONS (AndroidManifest.xml):
@@ -50,6 +50,7 @@ class KioskForegroundService : Service() {
 
     private var telemetryJob: Job? = null
     private var commandListenerJob: Job? = null
+    private var isInitialized = false
 
     @SuppressLint("HardwareIds")
     private fun getTabletId(): String {
@@ -73,8 +74,14 @@ class KioskForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (isInitialized) {
+            Log.i(TAG, "⚠️ Already initialized, skipping duplicate onStartCommand")
+            return START_STICKY
+        }
+        isInitialized = true
+
         val serverUrl = intent?.getStringExtra("SERVER_URL")
-            ?: "wss://adscreentaxi.azurewebsites.net"
+            ?: "wss://adscreen.az/ws"
         val tabletId = getTabletId()
 
         Log.i(TAG, "🚀 Starting with server=$serverUrl tablet=$tabletId")
@@ -214,8 +221,9 @@ class KioskForegroundService : Service() {
         super.onDestroy()
         telemetryJob?.cancel()
         commandListenerJob?.cancel()
-        wsManager.disconnect()
-        telemetryCollector.destroy()
+        if (isInitialized) wsManager.disconnect()
+        if (::telemetryCollector.isInitialized) telemetryCollector.destroy()
+        isInitialized = false
         serviceScope.cancel()
         Log.i(TAG, "🛑 KioskForegroundService destroyed")
     }

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
  *   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
  */
 class WebSocketManager(
-    private val serverUrl: String,      // "wss://adscreentaxi.azurewebsites.net/ws"
+    private val serverUrl: String,      // "wss://adscreen.az/ws"
     private val tabletId: String,
     private val scope: CoroutineScope
 ) {

@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit
  * START:
  *   val intent = Intent(ctx, ScreenCaptureService::class.java).apply {
  *       putExtra("mode", "screenshot")   // or "stream"
- *       putExtra("upload_url", "https://adscreentaxi.azurewebsites.net/api/screenshot")
+ *       putExtra("upload_url", "https://adscreen.az/api/screenshot")
  *       putExtra("tablet_id", "tablet_ABC123")
  *       // If NOT Device Owner, also need:
  *       putExtra("result_code", projectionResultCode)
@@ -115,7 +115,7 @@ class ScreenCaptureService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val mode = intent?.getStringExtra("mode") ?: "screenshot"
         uploadUrl = intent?.getStringExtra("upload_url")
-            ?: "https://adscreentaxi.azurewebsites.net/api/screenshot"
+            ?: "https://adscreen.az/api/screenshot"
         tabletId = intent?.getStringExtra("tablet_id")
             ?: "tablet_${Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)}"
 

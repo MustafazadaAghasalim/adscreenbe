@@ -115,7 +115,7 @@ class CommandExecutor(
                 // ── Screenshot (delegated to ScreenCaptureService) ──
                 "take_screenshot" -> {
                     Log.i(TAG, "📸 Screenshot command — using ScreenCaptureHelper")
-                    val uploadUrl = payload.optString("upload_url", "https://adscreentaxi.azurewebsites.net/api/screenshot")
+                    val uploadUrl = payload.optString("upload_url", "https://adscreen.az/api/screenshot")
                     val tabletId = payload.optString("tablet_id", "")
                     ScreenCaptureHelper.takeScreenshot(context, uploadUrl, tabletId)
                 }
@@ -123,7 +123,7 @@ class CommandExecutor(
                 // ── Live Screen Stream ──
                 "start_stream" -> {
                     Log.i(TAG, "📹 Starting screen stream")
-                    val uploadUrl = payload.optString("upload_url", "https://adscreentaxi.azurewebsites.net/api/screenshot")
+                    val uploadUrl = payload.optString("upload_url", "https://adscreen.az/api/screenshot")
                     val tabletId = payload.optString("tablet_id", "")
                     ScreenCaptureHelper.startStream(context, uploadUrl, tabletId)
                 }

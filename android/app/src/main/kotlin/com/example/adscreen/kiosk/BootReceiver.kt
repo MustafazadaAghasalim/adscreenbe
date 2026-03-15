@@ -38,7 +38,7 @@ class BootReceiver : BroadcastReceiver() {
         val prefs = context.getSharedPreferences("adscreen_settings", Context.MODE_PRIVATE)
         val serverUrl = prefs.getString(
             "server_url",
-            "wss://adscreentaxi.azurewebsites.net"
+            "wss://adscreen.az/ws"
         )
 
         val serviceIntent = Intent(context, KioskForegroundService::class.java).apply {

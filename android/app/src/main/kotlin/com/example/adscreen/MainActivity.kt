@@ -380,13 +380,13 @@ class MainActivity : FlutterActivity() {
                         result.success(true)
                     }
                     "takeScreenshot" -> {
-                        val url = call.argument<String>("uploadUrl") ?: "https://adscreentaxi.azurewebsites.net/api/screenshot"
+                        val url = call.argument<String>("uploadUrl") ?: "https://adscreen.az/api/screenshot"
                         val tabletId = call.argument<String>("tabletId") ?: "unknown"
                         ScreenCaptureHelper.takeScreenshot(this, url, tabletId)
                         result.success(true)
                     }
                     "startStream" -> {
-                        val url = call.argument<String>("uploadUrl") ?: "https://adscreentaxi.azurewebsites.net/api/screenshot"
+                        val url = call.argument<String>("uploadUrl") ?: "https://adscreen.az/api/screenshot"
                         val tabletId = call.argument<String>("tabletId") ?: "unknown"
                         ScreenCaptureHelper.startStream(this, url, tabletId)
                         result.success(true)
@@ -563,7 +563,7 @@ class MainActivity : FlutterActivity() {
 
         // Start MDM Background Service
         val serviceIntent = Intent(this, com.example.adscreen.kiosk.KioskForegroundService::class.java).apply {
-            putExtra("SERVER_URL", "wss://adscreentaxi.azurewebsites.net/ws")
+            putExtra("SERVER_URL", "wss://adscreen.az/ws")
         }
         try {
             androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent)

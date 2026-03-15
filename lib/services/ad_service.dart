@@ -8,6 +8,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../config/server_config.dart';
 import '../models/ad_model.dart';
 import 'tablet_service.dart';
+import 'device_settings_service.dart';
 
 class AdService {
   static final AdService _instance = AdService._internal();
@@ -127,6 +128,22 @@ class AdService {
           }
         }
       }
+    });
+
+    // Listen for device settings updates via Socket.IO
+    _socket!.on('device_settings_updated', (data) {
+      print('AdService: Received device_settings_updated via Socket.IO');
+      if (data is Map<String, dynamic>) {
+        DeviceSettingsService().applySettings(data);
+      } else if (data is Map) {
+        DeviceSettingsService().applySettings(Map<String, dynamic>.from(data));
+      }
+    });
+
+    // Listen for new content available (triggers ad refresh)
+    _socket!.on('new_content_available', (data) {
+      print('AdService: Received new_content_available: $data');
+      _debouncedFetch();
     });
 
     _socket!.onDisconnect((_) => print('AdService: Socket Disconnected'));
