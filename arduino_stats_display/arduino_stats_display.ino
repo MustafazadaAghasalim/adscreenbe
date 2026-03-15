@@ -20,6 +20,8 @@
 
 MCUFRIEND_kbv tft;
 
+// No SoftwareSerial needed, using Hardware Serial1 on Pins 18/19
+
 // ============================================================================
 // TOUCH — VMA412 / MCUFRIEND Shield
 // ============================================================================
@@ -129,6 +131,69 @@ int16_t p_http = -1, p_ssl = -1, p_cont = -1;
 char p_nginx[8] = "";
 char p_ip[20] = "", p_pip[20] = "", p_ping[12] = "", p_ssh[8] = "";
 int16_t p_rx = -1, p_tx = -1;
+int8_t  g_fanLevel = 2; // Default to MED (Level 2)
+uint8_t curSetPage = 0;
+uint8_t graphIdx = 0;
+
+static const char L00[] PROGMEM = "Reboot Pi";
+static const char L01[] PROGMEM = "Shutdown Pi";
+static const char L02[] PROGMEM = "Restart Daemon";
+static const char L03[] PROGMEM = "Restart Kiosk";
+static const char L04[] PROGMEM = "Restart Docker";
+static const char L05[] PROGMEM = "Restart Nginx";
+static const char L06[] PROGMEM = "Restart Postgres";
+static const char L07[] PROGMEM = "Restart Redis";
+static const char L08[] PROGMEM = "Restart Node";
+static const char L09[] PROGMEM = "Restart Cloudflared";
+static const char L10[] PROGMEM = "Stop All Cont.";
+static const char L11[] PROGMEM = "Start All Cont.";
+static const char L12[] PROGMEM = "Clear RAM Cache";
+static const char L13[] PROGMEM = "APT Update";
+static const char L14[] PROGMEM = "APT Upgrade";
+static const char L15[] PROGMEM = "Vacuum Logs";
+static const char L16[] PROGMEM = "Clear Docker BLD";
+static const char L17[] PROGMEM = "Prune Docker Img";
+static const char L18[] PROGMEM = "Sync NTP Time";
+static const char L19[] PROGMEM = "Fan OFF";
+static const char L20[] PROGMEM = "Fan LOW";
+static const char L21[] PROGMEM = "Fan MED";
+static const char L22[] PROGMEM = "Fan HIGH";
+static const char L23[] PROGMEM = "Fan MAX";
+static const char L24[] PROGMEM = "Calibrate TFT";
+static const char L25[] PROGMEM = "Ping 8.8.8.8";
+static const char L26[] PROGMEM = "Ping Gateway";
+static const char L27[] PROGMEM = "Check Pub IP";
+static const char L28[] PROGMEM = "Reset eth0";
+static const char L29[] PROGMEM = "Renew DHCP";
+static const char L30[] PROGMEM = "Test DNS";
+static const char L31[] PROGMEM = "Flush DNS";
+static const char L32[] PROGMEM = "Active Conns";
+static const char L33[] PROGMEM = "Disk Space";
+static const char L34[] PROGMEM = "NVMe SMART";
+static const char L35[] PROGMEM = "Top CPU Proc";
+static const char L36[] PROGMEM = "Top RAM Proc";
+static const char L37[] PROGMEM = "CPU Temp";
+static const char L38[] PROGMEM = "NVMe Temp";
+static const char L39[] PROGMEM = "System Uptime";
+static const char L40[] PROGMEM = "Test USB";
+static const char L41[] PROGMEM = "Check Errors";
+static const char L42[] PROGMEM = "Refresh Telemetry";
+static const char L43[] PROGMEM = "Test DB";
+static const char L44[] PROGMEM = "Clear Web Cache";
+static const char L45[] PROGMEM = "Toggle Maint.";
+static const char L46[] PROGMEM = "Toggle Kiosk";
+static const char L47[] PROGMEM = "Node API";
+static const char L48[] PROGMEM = "HW Ping";
+static const char L49[] PROGMEM = "Reset Arduino";
+
+static const char* const setLbls[50] PROGMEM = {
+  L00,L01,L02,L03,L04,L05,L06,L07,L08,L09,
+  L10,L11,L12,L13,L14,L15,L16,L17,L18,L19,
+  L20,L21,L22,L23,L24,L25,L26,L27,L28,L29,
+  L30,L31,L32,L33,L34,L35,L36,L37,L38,L39,
+  L40,L41,L42,L43,L44,L45,L46,L47,L48,L49
+};
+
 
 // ============================================================================
 // TOUCH CALIBRATION
@@ -340,22 +405,7 @@ static const char PROGMEM t3[] = "SET";
 static const char* const tabLbl[4] PROGMEM = { t0, t1, t2, t3 };
 
 void drawBottomNav() {
-  int16_t y = SCR_H - NAV_H;
-  int16_t tw = SCR_W / TAB_COUNT;
-  tft.drawFastHLine(0, y - 1, SCR_W, C_DKGREY);
-  for (uint8_t i = 0; i < TAB_COUNT; i++) {
-    uint16_t bg = (i == curTab) ? C_TAB_ON : C_TAB_OFF;
-    uint16_t fg = (i == curTab) ? C_WHITE  : C_GREY;
-    tft.fillRect(i * tw, y, tw, NAV_H, bg);
-    tft.drawRect(i * tw, y, tw, NAV_H, C_DKGREY);
-    char buf[8];
-    strncpy_P(buf, (const char*)pgm_read_ptr(&tabLbl[i]), 7); buf[7] = '\0';
-    int16_t tLen = strlen(buf) * 6;
-    tft.setCursor(i * tw + (tw - tLen) / 2, y + (NAV_H / 2) - 4);
-    tft.setTextColor(fg);
-    tft.setTextSize(1);
-    tft.print(buf);
-  }
+  // Navigation removed globally, controlled now by top tabs only
 }
 
 void drawTabs() {
@@ -398,23 +448,32 @@ void renderDashboard() {
   int16_t y   = CY + 4;   // y=32
   int16_t barW = 162;
   int16_t barH = 12;
-  int16_t gap  = 44;
 
-  // Left: metric labels
+  // CPU/RAM Labels
   tft.setTextSize(1);
-  tft.setTextColor(C_CYAN);    tft.setCursor(4, y);           tft.print(F("CPU"));
-  tft.setTextColor(C_MAGENTA); tft.setCursor(4, y + gap);     tft.print(F("RAM"));
-  tft.setTextColor(C_ORANGE);  tft.setCursor(4, y + gap * 2); tft.print(F("TEMP"));
-  tft.setTextColor(C_GREEN);   tft.setCursor(4, y + gap * 3); tft.print(F("DISK"));
+  tft.setTextColor(C_CYAN);    tft.setCursor(4, y);       tft.print(F("CPU"));
+  tft.setTextColor(C_MAGENTA); tft.setCursor(60, y);      tft.print(F("RAM"));
+  
+  // Graph Box for CPU & RAM
+  int16_t graphY = y + 12;
+  tft.drawRect(4, graphY, 162, 60, C_DKGREY);
+  tft.fillRect(5, graphY + 1, 160, 58, C_BG);
+  graphIdx = 0; // reset graph drawing
 
-  // Empty bar borders
-  for (int i = 0; i < 4; i++) {
-    tft.drawRect(4, y + 10 + i * gap, barW, barH, C_DKGREY);
-    tft.fillRect(5, y + 11 + i * gap, barW - 2, barH - 2, C_BAR_BG);
-  }
+  // TEMP and DISK
+  int16_t tempY = y + 80;
+  int16_t diskY = y + 120;
+  
+  tft.setTextColor(C_ORANGE);  tft.setCursor(4, tempY); tft.print(F("TEMP"));
+  tft.drawRect(4, tempY + 10, barW, barH, C_DKGREY);
+  tft.fillRect(5, tempY + 11, barW - 2, barH - 2, C_BAR_BG);
+
+  tft.setTextColor(C_GREEN);   tft.setCursor(4, diskY); tft.print(F("DISK"));
+  tft.drawRect(4, diskY + 10, barW, barH, C_DKGREY);
+  tft.fillRect(5, diskY + 11, barW - 2, barH - 2, C_BAR_BG);
 
   // Divider between bars and status column
-  tft.drawFastVLine(196, CY, SCR_H - CY - NAV_H, C_DKGREY);
+  tft.drawFastVLine(196, CY, SCR_H - CY, C_DKGREY);
 
   // Right: status labels
   int16_t sx = 200;
@@ -436,37 +495,52 @@ void updateDashboard(int16_t cpu, int16_t ram, int16_t temp, int16_t disk,
   int16_t y   = CY + 4;
   int16_t barW = 162;
   int16_t barH = 12;
-  int16_t gap  = 44;
   int16_t sx   = 200;
 
+  // Always draw the animated graph point for CPU and RAM
+  int16_t graphY = y + 12;
+  int16_t gx = 5 + graphIdx;
+  
+  // Erase current column + 1 and draw a cursor line at column + 2
+  tft.drawFastVLine(gx, graphY + 1, 58, C_BG);
+  tft.drawFastVLine(5 + ((graphIdx + 1) % 160), graphY + 1, 58, C_BG);
+  tft.drawFastVLine(5 + ((graphIdx + 2) % 160), graphY + 1, 58, 0x18C3); // Faint leading cursor
+
+  // Map 0-100 to 0-56 (height is 58, so plotted pixels reside inside)
+  int16_t cy = graphY + 58 - (cpu * 56 / 100);
+  int16_t ry = graphY + 58 - (ram * 56 / 100);
+  
+  tft.fillRect(gx, cy - 1, 2, 2, C_CYAN);
+  tft.fillRect(gx, ry - 1, 2, 2, C_MAGENTA);
+  
+  graphIdx = (graphIdx + 1) % 160;
+
   if (cpu != p_cpu) {
-    uint16_t cc = cpu > 90 ? C_RED : cpu > 70 ? C_ORANGE : C_CYAN;
-    drawBar(4, y + 10, barW, barH, cpu, p_cpu, cc);
     char b[8]; snprintf(b, 8, "%d%%", cpu);
-    drawVal(170, y + 10, 24, 12, b, cc);
+    drawVal(28, y, 24, 12, b, C_CYAN);
     p_cpu = cpu;
   }
   if (ram != p_ram) {
-    uint16_t rc = ram > 90 ? C_RED : ram > 70 ? C_ORANGE : C_MAGENTA;
-    drawBar(4, y + 10 + gap, barW, barH, ram, p_ram, rc);
     char b[8]; snprintf(b, 8, "%d%%", ram);
-    drawVal(170, y + 10 + gap, 24, 12, b, rc);
+    drawVal(84, y, 24, 12, b, C_MAGENTA);
     p_ram = ram;
   }
   if (temp != p_temp) {
+    int16_t tempY = y + 80;
     int16_t tp = constrain(temp, 0, 100);
     uint16_t tc = temp > 75 ? C_RED : temp > 55 ? C_ORANGE : C_GREEN;
-    drawBar(4, y + 10 + gap * 2, barW, barH, tp,
+    drawBar(4, tempY + 10, barW, barH, tp,
             (p_temp < 0) ? -1 : constrain(p_temp, 0, 100), tc);
     char b[8]; snprintf(b, 8, "%dC", temp);
-    drawVal(170, y + 10 + gap * 2, 24, 12, b, tc);
+    drawVal(140, tempY, 30, 12, b, tc);
     p_temp = temp;
   }
   if (disk != p_disk) {
+    int16_t diskY = y + 120;
     uint16_t dc = disk > 90 ? C_RED : disk > 80 ? C_ORANGE : C_GREEN;
-    drawBar(4, y + 10 + gap * 3, barW, barH, disk, p_disk, dc);
+    drawBar(4, diskY + 10, barW, barH, disk, p_disk, dc);
     char b[8]; snprintf(b, 8, "%d%%", disk);
-    drawVal(170, y + 10 + gap * 3, 24, 12, b, dc);
+    drawVal(140, diskY, 30, 12, b, dc);
     p_disk = disk;
   }
 
@@ -612,19 +686,47 @@ void updateNetwork(const char* ip, const char* pubip, const char* ping_ms,
 // ============================================================================
 void renderSettings() {
   clearContent();
-  int16_t y = CY + 10;  // y=38
+  int16_t y = CY + 8;
+  
+  // Draw 5 buttons for the current page
+  for (uint8_t i = 0; i < 5; i++) {
+    uint8_t cmdIdx = (curSetPage * 5) + i;
+    char buf[20];
+    strncpy_P(buf, (const char*)pgm_read_ptr(&setLbls[cmdIdx]), 19);
+    buf[19] = '\0';
+    
+    uint16_t bc = C_CYAN;
+    if (cmdIdx < 4) bc = C_RED;
+    else if (cmdIdx < 12) bc = C_ORANGE;
+    else if (cmdIdx >= 19 && cmdIdx <= 24) bc = C_MAGENTA;
+    else if (cmdIdx >= 42) bc = C_GREEN;
 
-  drawBtn(4, y,       SCR_W - 8, 32, F("REQUEST DATA"),    C_CYAN,   C_BG);
-  drawBtn(4, y + 40,  SCR_W - 8, 32, F("PING TEST"),       C_ORANGE, C_BG);
-  drawBtn(4, y + 80,  SCR_W - 8, 32, F("RESET DISPLAY"),   C_RED,    C_WHITE);
-  drawBtn(4, y + 120, SCR_W - 8, 32, F("CALIBRATE TOUCH"), C_YELLOW, C_BG);
-
-  // System info
-  int16_t iy = y + 158;
-  tft.drawFastHLine(4, iy - 2, SCR_W - 8, C_DKGREY);
-  tft.setTextSize(1); tft.setTextColor(C_GREY);
-  tft.setCursor(4, iy + 2);
-  tft.print(F("Landscape-R1 | 320x240 | Mega 2560 | VMA412 | 115200"));
+    // A simpler flashBtn alternative logic lives in handleTouch
+    tft.fillRoundRect(10, y + (i * 34), SCR_W - 20, 28, 5, bc);
+    tft.drawRoundRect(10, y + (i * 34), SCR_W - 20, 28, 5, C_WHITE);
+    
+    String s(buf);
+    int16_t tw = s.length() * 6;
+    tft.setCursor(10 + (SCR_W - 20 - tw) / 2, y + (i * 34) + 10);
+    tft.setTextColor(cmdIdx < 4 ? C_WHITE : C_BG); tft.setTextSize(1);
+    tft.print(buf);
+  }
+  
+  // Pagination controls at the bottom
+  int16_t py = SCR_H - 32;
+  tft.drawFastHLine(4, py - 4, SCR_W - 8, C_DKGREY);
+  
+  tft.fillRoundRect(10, py, 60, 26, 4, curSetPage > 0 ? C_GREEN : C_DKGREY);
+  tft.setCursor(22, py + 9); tft.setTextColor(C_WHITE); tft.print(F("< PREV"));
+  
+  char pbuf[16];
+  snprintf(pbuf, 16, "Pg %d/10", curSetPage + 1);
+  tft.setCursor(136, py + 9);
+  tft.setTextColor(C_GREEN);
+  tft.print(pbuf);
+  
+  tft.fillRoundRect(SCR_W - 70, py, 60, 26, 4, curSetPage < 9 ? C_GREEN : C_DKGREY);
+  tft.setCursor(SCR_W - 58, py + 9); tft.setTextColor(C_WHITE); tft.print(F("NEXT >"));
 }
 
 // ============================================================================
@@ -692,18 +794,27 @@ void renderOfflineScreen() {
 void sendCmd(const char* cmd) {
   StaticJsonDocument<96> doc;
   doc["cmd"] = cmd;
-  Serial.print('<');
-  serializeJson(doc, Serial);
-  Serial.println('>');
+  Serial1.print('<');
+  serializeJson(doc, Serial1);
+  Serial1.println('>');
 }
 
 void sendCmdTarget(const char* cmd, const char* target) {
   StaticJsonDocument<128> doc;
   doc["cmd"] = cmd;
   doc["target"] = target;
-  Serial.print('<');
-  serializeJson(doc, Serial);
-  Serial.println('>');
+  Serial1.print('<');
+  serializeJson(doc, Serial1);
+  Serial1.println('>');
+}
+
+void sendFanCmd(int level) {
+  StaticJsonDocument<96> doc;
+  doc["cmd"] = "set_fan";
+  doc["level"] = level;
+  Serial1.print('<');
+  serializeJson(doc, Serial1);
+  Serial1.println('>');
 }
 
 void showConfirm() {
@@ -725,20 +836,15 @@ void handleTouch(int16_t px, int16_t py) {
     return;
   }
 
-  // Primary reliable navigation: large bottom bar
-  if (py >= (SCR_H - NAV_H)) {
-    uint8_t t = (uint32_t)px * TAB_COUNT / SCR_W;
-    if (t < TAB_COUNT && t != curTab) curTab = t;
-    return;
-  }
-
-  // Fallback gesture navigation: tap left/right edge to change tab.
+  // No bottom bar anymore, skip that logic.
+  
+  // Fallback gesture navigation on side edges
   if (py > 34 && py < (SCR_H - 10)) {
-    if (px <= 12) {
+    if (px <= 20) {
       curTab = (curTab + TAB_COUNT - 1) % TAB_COUNT;
       return;
     }
-    if (px >= (SCR_W - 13)) {
+    if (px >= (SCR_W - 20)) {
       curTab = (curTab + 1) % TAB_COUNT;
       return;
     }
@@ -776,32 +882,52 @@ void handleTouch(int16_t px, int16_t py) {
 
   // Settings buttons
   if (curTab == TAB_SET) {
-    int16_t y = CY + 10;
-    if (py >= y && py < y + 32) {
-      flashBtn(4, y, SCR_W - 8, 32, F("REQUEST DATA"), C_CYAN);
-      sendCmd("request_data");
-      return;
-    }
-    if (py >= y + 40 && py < y + 72) {
-      flashBtn(4, y + 40, SCR_W - 8, 32, F("PING TEST"), C_ORANGE);
-      sendCmd("ping_test");
-      return;
-    }
-    if (py >= y + 80 && py < y + 112) {
-      flashBtn(4, y + 80, SCR_W - 8, 32, F("RESET DISPLAY"), C_RED);
-      drawnTab = 255;
-      return;
-    }
-    if (py >= y + 120 && py < y + 152) {
-      flashBtn(4, y + 120, SCR_W - 8, 32, F("CALIBRATE TOUCH"), C_YELLOW);
-      bool ok = runTouchCalibration();
-      if (!ok) {
-        tft.fillScreen(C_BG);
-        showToast(F("Calibration Failed"), C_RED, C_WHITE);
-        delay(1000);
+    int16_t y = CY + 8;
+    for (uint8_t i = 0; i < 5; i++) {
+      if (py >= y + (i * 34) && py < y + (i * 34) + 28 && px >= 10 && px < SCR_W - 10) {
+        uint8_t cmdIdx = (curSetPage * 5) + i;
+        
+        // Handle special local recalibration directly
+        if (cmdIdx == 24) {
+           tft.fillRoundRect(10, y + (i * 34), SCR_W - 20, 28, 5, C_WHITE);
+           delay(100);
+           bool ok = runTouchCalibration();
+           if (!ok) {
+             tft.fillScreen(C_BG);
+             showToast(F("Calibration Failed"), C_RED, C_WHITE);
+             delay(1000);
+           }
+           drawnTab = 255;
+           return;
+        }
+
+        tft.fillRoundRect(10, y + (i * 34), SCR_W - 20, 28, 5, C_WHITE);
+        delay(100);
+        drawnTab = 255;
+        
+        StaticJsonDocument<64> doc;
+        doc["cmd"] = "e50";
+        doc["id"] = cmdIdx;
+        Serial1.print('<');
+        serializeJson(doc, Serial1);
+        Serial1.println('>');
+        showConfirm();
+        return;
       }
-      drawnTab = 255;
-      return;
+    }
+    
+    int16_t py_btn = SCR_H - 32;
+    if (py >= py_btn && py < py_btn + 26) {
+      if (px >= 10 && px < 70 && curSetPage > 0) {
+        curSetPage--;
+        drawnTab = 255;
+        return;
+      }
+      if (px >= SCR_W - 70 && px < SCR_W - 10 && curSetPage < 9) {
+        curSetPage++;
+        drawnTab = 255;
+        return;
+      }
     }
   }
 }
@@ -861,14 +987,14 @@ void processMessage() {
     tft.setCursor(18, 138);
     tft.setTextColor(C_GREEN); tft.setTextSize(1);
     tft.print(F("Pi: ")); tft.print(m);
-    delay(1000);
+    delay(2500);
     drawnTab = 255;
   }
 }
 
 void readSerial() {
-  while (Serial.available()) {
-    char c = Serial.read();
+  while (Serial1.available()) {
+    char c = Serial1.read();
     if (c == '<') { sIdx = 0; inMsg = true; msgRdy = false; }
     else if (c == '>' && inMsg) { sBuf[sIdx] = '\0'; inMsg = false; msgRdy = true; }
     else if (inMsg && sIdx < SBUF_SZ - 1) { sBuf[sIdx++] = c; }
@@ -880,7 +1006,8 @@ void readSerial() {
 // SETUP
 // ============================================================================
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200); // Debug USB
+  Serial1.begin(9600);  // RPi Communication on Pins 18/19
   delay(300);
 
   uint16_t id = tft.readID();

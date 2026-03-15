@@ -1,0 +1,24 @@
+###############################################################################
+#  Mailcow Override — Binds SMTP/IMAP to non-conflicting ports
+#  Nginx Proxy Manager on host handles 80/443 → routes mail.adscreen.az
+#  to Mailcow's HTTP UI on port 8443 (HTTPS) / 8880 (HTTP).
+#  SMTP/IMAP exposed on standard ports for direct MUA access.
+###############################################################################
+
+services:
+  nginx-mailcow:
+    ports:
+      - "8880:80"    # Mailcow HTTP UI (proxied via Cloudflare tunnel)
+      - "8443:443"   # Mailcow HTTPS UI
+  postfix-mailcow:
+    ports:
+      - "25:25"       # SMTP
+      - "465:465"     # SMTPS
+      - "587:587"     # Submission
+  dovecot-mailcow:
+    ports:
+      - "143:143"     # IMAP
+      - "993:993"     # IMAPS
+      - "110:110"     # POP3
+      - "995:995"     # POP3S
+      - "4190:4190"   # ManageSieve

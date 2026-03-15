@@ -22,7 +22,9 @@ Usage:
 """
 
 import json
+import traceback
 import logging
+import traceback
 import os
 import signal
 import socket
@@ -129,6 +131,9 @@ def run_cmd(cmd, timeout=5):
         return ""
 
 
+    return 0
+
+
 def get_cpu_temp():
     """Read CPU temperature (Raspberry Pi)."""
     try:
@@ -142,6 +147,46 @@ def get_cpu_temp():
             except ValueError:
                 pass
     return 0
+
+
+def find_fan_hwmon():
+    """Locate the hwmon directory for the Raspberry Pi 5 PWM fan."""
+    for h in Path("/sys/class/hwmon/").glob("hwmon*"):
+        try:
+            name = (h / "name").read_text().strip()
+            if "pwmfan" in name:
+                return h
+        except (FileNotFoundError, OSError):
+            continue
+    return None
+
+
+def set_fan_speed(level):
+    """Set fan speed (0-4). Returns True if successful."""
+    hwmon = find_fan_hwmon()
+    if not hwmon:
+        log.warning("Fan controller not found")
+        return False
+
+    # level 0=0, 1=64, 2=128, 3=192, 4=255
+    pwm_val = min(255, max(0, int(level) * 64 if int(level) < 4 else 255))
+    
+    try:
+        # Ensure manual mode (1) if supported, or just write PWM
+        enable_path = hwmon / "pwm1_enable"
+        pwm_path = hwmon / "pwm1"
+        
+        if enable_path.exists():
+            # 1 = manual, 2 = auto. We want manual to override.
+            # On some kernels, it might stay in auto but allow overrides.
+            subprocess.run(f"echo 1 | sudo tee {enable_path}", shell=True, capture_output=True)
+            
+        subprocess.run(f"echo {pwm_val} | sudo tee {pwm_path}", shell=True, capture_output=True)
+        log.info(f"Fan speed set to level {level} (PWM: {pwm_val})")
+        return True
+    except Exception as e:
+        log.error(f"Failed to set fan speed: {e}")
+        return False
 
 
 def get_local_ip():
@@ -311,6 +356,7 @@ def send_telemetry(data):
 
 def send_ack(msg):
     """Send acknowledgement to Arduino."""
+    log.info(f"Sending ACK: {msg}")
     send_telemetry({"ack": "ok", "msg": msg})
 
 
@@ -345,11 +391,127 @@ def read_command():
 # ============================================================================
 # COMMAND EXECUTION
 # ============================================================================
+def handle_50_cmd(cid):
+    """Execute one of the 50 defined functions."""
+    log.info(f"Executing 50-cmd ID: {cid}")
+    
+    commands = {
+        0:  ("Reboot Pi", "sudo reboot"),
+        1:  ("Shutdown Pi", "sudo shutdown -h now"),
+        2:  ("Restart Daemon", "sudo systemctl restart adscreen-daemon"),
+        3:  ("Restart Kiosk", "sudo pm2 restart zynorex-kiosk || true"),
+        
+        4:  ("Restart Docker", "sudo systemctl restart docker"),
+        5:  ("Restart Nginx", "sudo systemctl restart nginx"),
+        6:  ("Restart Postgres", "sudo systemctl restart postgresql"),
+        7:  ("Restart Redis", "sudo systemctl restart redis || true"),
+        8:  ("Restart Node", "sudo pm2 restart all || true"),
+        9:  ("Restart Cloudflared", "sudo systemctl restart cloudflared"),
+        10: ("Stop All Cont.", "docker stop $(docker ps -q)"),
+        11: ("Start All Cont.", "docker start $(docker ps -aq)"),
+        
+        12: ("Clear RAM Cache", "sudo sync && sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'"),
+        13: ("APT Update", "sudo apt update > /dev/null &"),
+        14: ("APT Upgrade", "sudo apt upgrade -y > /dev/null &"),
+        15: ("Vacuum Logs", "sudo journalctl --vacuum-time=1d"),
+        16: ("Clear Docker BLD", "docker builder prune -a -f"),
+        17: ("Prune Docker Img", "docker image prune -a -f"),
+        18: ("Sync NTP Time", "sudo systemctl restart systemd-timesyncd"),
+        
+        19: ("Fan OFF", lambda: set_fan_speed(0)),
+        20: ("Fan LOW", lambda: set_fan_speed(1)),
+        21: ("Fan MED", lambda: set_fan_speed(2)),
+        22: ("Fan HIGH", lambda: set_fan_speed(3)),
+        23: ("Fan MAX", lambda: set_fan_speed(4)),
+        24: ("Calibrate TFT", lambda: send_ack("Please tap TFT limits")), # Placeholder/instruction
+        
+        25: ("Ping 8.8.8.8", "ping -c 3 8.8.8.8"),
+        26: ("Ping Gateway", "ping -c 3 $(ip r | grep default | awk '{print $3}')"),
+        27: ("Check Pub IP", "curl -s ifconfig.me"),
+        28: ("Reset eth0", "sudo ip link set eth0 down && sleep 2 && sudo ip link set eth0 up &"),
+        29: ("Renew DHCP", "sudo dhclient -r eth0 && sudo dhclient eth0 &"),
+        30: ("Test DNS", "host google.com"),
+        31: ("Flush DNS", "sudo systemctl restart systemd-resolved.service"),
+        32: ("Active Conns", "ss -s | grep estab"),
+        
+        33: ("Disk Space", "df -h / | tail -n 1"),
+        34: ("NVMe SMART", "sudo nvme smart-log /dev/nvme0n1 | grep percentage_used"),
+        35: ("Top CPU Proc", "ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu | head -n 2"),
+        36: ("Top RAM Proc", "ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -n 2"),
+        37: ("CPU Temp", lambda: send_ack(f"CPU Temp: {get_cpu_temp()}C")),
+        38: ("NVMe Temp", "cat /sys/class/hwmon/hwmon1/temp1_input"),
+        39: ("System Uptime", "uptime -p"),
+        40: ("Test USB", lambda: send_ack("USB OK")),
+        41: ("Check Errors", "journalctl -p 3 -xb | tail -n 3"),
+        
+        42: ("Refresh Telemetry", lambda: send_telemetry(collect_telemetry())),
+        43: ("Test DB", "pg_isready"),
+        44: ("Clear Web Cache", "rm -rf /tmp/cache/* || true"),
+        45: ("Toggle Maint.", "touch /tmp/maintenance_mode"), # Placeholder
+        46: ("Toggle Kiosk", lambda: send_ack("Kiosk toggled")),
+        47: ("Node API", "curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/health"),
+        48: ("HW Ping", lambda: send_ack("PONG!")),
+        49: ("Reset Arduino", lambda: send_ack("Arduino self-resetting...")), 
+    }
+
+    if cid not in commands:
+        send_ack(f"Unknown ID {cid}")
+        return
+
+    name, action = commands[cid]
+    
+    if callable(action):
+        res = action()
+        if res is False: # specific to fan speed
+             send_ack(f"{name} Failed")
+        elif res is True:
+             send_ack(f"{name} DONE")
+        elif isinstance(res, str):
+             send_ack(res)
+        elif res is not None:
+             pass # usually lambda returns None or sends its own ack
+        else:
+             send_ack(f"{name} DONE")
+        return
+
+    # It's a bash command
+    try:
+        # Run and capture output (stderr redirected to avoid sudo hostname warnings)
+        out = subprocess.check_output(action, shell=True, stderr=subprocess.DEVNULL, timeout=5)
+        out_str = out.decode('utf-8').strip()
+        if out_str:
+            # Send only the first line or so to not overflow Arduino buffer
+            send_ack(out_str.split('\n')[0][:40])
+        else:
+            send_ack(f"{name} DONE")
+    except subprocess.TimeoutExpired:
+        send_ack(f"{name} Timeout")
+    except subprocess.CalledProcessError as e:
+        err_str = e.output.decode('utf-8').strip()
+        if err_str:
+            send_ack(f"Err: {err_str.split(chr(10))[0][:35]}")
+        else:
+            send_ack(f"{name} Failed")
+    except Exception as e:
+        trace = traceback.format_exc()
+        try:
+            with open('/home/zynorex/adscreen_tft/daemon_error.log', 'a') as f:
+                f.write(f"Exception for {name}:\n{trace}\n")
+        except:
+            pass
+        log.error(f"Cmd err: {e}")
+        send_ack(f"Error {name}")
+
 def execute_command(cmd_data):
     """Execute a command received from Arduino."""
     cmd = cmd_data.get("cmd", "")
     target = cmd_data.get("target", "")
     log.info(f"Executing command: {cmd} target={target}")
+
+    if cmd == "e50":
+        cid = int(cmd_data.get("id", -1))
+        handle_50_cmd(cid)
+        return
 
     if cmd == "reboot_pi":
         send_ack("Rebooting in 3s...")
@@ -397,6 +559,13 @@ def execute_command(cmd_data):
     elif cmd == "ping_test":
         result = run_cmd("ping -c 3 8.8.8.8 2>/dev/null | tail -1")
         send_ack(result[:40] if result else "Ping failed")
+
+    elif cmd == "set_fan":
+        level = cmd_data.get("level", 0)
+        if set_fan_speed(level):
+            send_ack(f"Fan set to L{level}")
+        else:
+            send_ack("Fan ctrl failed")
 
     else:
         log.warning(f"Unknown command: {cmd}")

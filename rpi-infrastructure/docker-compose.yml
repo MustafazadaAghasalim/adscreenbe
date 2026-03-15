@@ -21,6 +21,8 @@ volumes:
   filebrowser_db:
   filebrowser_config:
   uptime_kuma_data:
+  ntfy_cache:
+  ntfy_etc:
 
 services:
   # ─── 1. Portainer CE ─────────────────────────────────────────────────
@@ -171,13 +173,20 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
-      - GITEA__server__ROOT_URL=http://localhost:3001
+      - GITEA__server__ROOT_URL=https://gitea.adscreen.az
       - GITEA__server__HTTP_PORT=3000
       - GITEA__server__SSH_PORT=2222
+      - GITEA__server__SSH_DOMAIN=gitea.adscreen.az
+      # Allow webhooks to reach the Pi host (port 9001 — adscreen-webhook)
+      - GITEA__webhook__ALLOWED_HOST_LIST=host.docker.internal,172.17.0.1,192.168.0.0/16,10.0.0.0/8
+      - GITEA__webhook__SKIP_TLS_VERIFY=true
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    # Allows Gitea to reach Pi host services (e.g., webhook on port 9001)
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     networks:
       - infra
 
@@ -247,5 +256,25 @@ services:
       - SSHHOST=172.17.0.1
       - SSHUSER=zynorex
       - SSHPASS=15261526
+    networks:
+      - infra
+
+  # ─── 14. ntfy (Push Notification Server) ─────────────────────────────
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    restart: unless-stopped
+    ports:
+      - "8089:80"
+    command: serve
+    environment:
+      - TZ=Asia/Baku
+      - NTFY_BASE_URL=https://ntfy.adscreen.az
+      - NTFY_BEHIND_PROXY=true
+      - NTFY_ATTACHMENT_CACHE_DIR=/var/cache/ntfy/attachments
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_etc:/etc/ntfy
     networks:
       - infra
