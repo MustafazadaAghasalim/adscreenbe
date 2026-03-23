@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter (Tablet - Hot Reload)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "AX6P9X5925G00800",
+      "flutterMode": "debug",
+      "program": "lib/main.dart",
+      "args": ["--hot"],
+      "flutterAdditionalArgs": ["--no-enable-impeller"]
+    },
+    {
+      "name": "Flutter (macOS)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "macos",
+      "flutterMode": "debug",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "Flutter (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "flutterMode": "debug",
+      "program": "lib/main.dart"
+    }
+  ]
+}

@@ -31,6 +31,7 @@ import '../services/heatmap_telemetry_service.dart';
 import '../services/isolate_prefetch_service.dart';
 import '../services/kiosk_lifecycle_observer.dart';
 import 'ux_widgets.dart';
+import 'millionaire_game_screen.dart';
 
 Future<void> toggleKiosk(bool enable) async {
   if (enable) {
@@ -56,6 +57,8 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   String? _activeActionId; // NEW: Track currently active action from navbar
   int _navIndex = 0; // Track selected nav item for GlassNavigationBar
   final FocusNode _focusNode = FocusNode();
+  Map<String, dynamic>? _millionaireGameData; // Active Millionaire game
+  StreamSubscription? _millionaireSubscription;
 
   @override
   void initState() {
@@ -90,6 +93,16 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
         if (_adTimer == null || !_adTimer!.isActive) {
            _playNextAd();
         }
+      }
+    });
+
+    // Subscribe to Millionaire game pushes
+    _millionaireSubscription = AdService().millionaireGameStream.listen((gameData) {
+      if (mounted) {
+        print("KioskScreen: Millionaire game received!");
+        setState(() {
+          _millionaireGameData = gameData;
+        });
       }
     });
   }
@@ -146,6 +159,7 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   void dispose() {
     _adTimer?.cancel();
     _subscription?.cancel();
+    _millionaireSubscription?.cancel();
     _focusNode.dispose();
     super.dispose();
   }
@@ -259,6 +273,18 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
                     child: _ActionOverlay(
                       actionId: _activeActionId!,
                       onClose: () => setState(() => _activeActionId = null),
+                    ),
+                  ),
+                if (_millionaireGameData != null)
+                  Positioned.fill(
+                    child: MillionaireGameScreen(
+                      gameData: _millionaireGameData!,
+                      onGameEnd: () {
+                        setState(() => _millionaireGameData = null);
+                      },
+                      onResult: (result) {
+                        AdService().emitMillionaireResult(result);
+                      },
                     ),
                   ),
               ],

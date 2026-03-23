@@ -18,6 +18,10 @@ class AdService {
   IO.Socket? _socket;
   final _adsController = StreamController<List<Ad>>.broadcast();
   Stream<List<Ad>> get adsStream => _adsController.stream;
+
+  // Millionaire game stream
+  final _millionaireController = StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get millionaireGameStream => _millionaireController.stream;
   
   List<Ad> _cachedAds = [];
   List<Ad> get cachedAds => _cachedAds;
@@ -146,6 +150,16 @@ class AdService {
       _debouncedFetch();
     });
 
+    // Listen for Millionaire game push from admin
+    _socket!.on('start_millionaire_game', (data) {
+      print('AdService: Received start_millionaire_game: $data');
+      if (data is Map) {
+        _millionaireController.add(Map<String, dynamic>.from(data));
+      } else if (data is Map<String, dynamic>) {
+        _millionaireController.add(data);
+      }
+    });
+
     _socket!.onDisconnect((_) => print('AdService: Socket Disconnected'));
     
     // Initial fetch on startup
@@ -164,6 +178,15 @@ class AdService {
   void emitTelemetry(Map<String, dynamic> payload) {
     if (_socket != null && _socket!.connected) {
       _socket!.emit('tablet_telemetry', payload);
+    }
+  }
+
+  /// Send Millionaire game result back to server
+  void emitMillionaireResult(Map<String, dynamic> result) {
+    if (_socket != null && _socket!.connected) {
+      result['tablet_id'] = TabletService().tabletId;
+      _socket!.emit('millionaire_game_result', result);
+      print('AdService: Emitted millionaire_game_result');
     }
   }
 
