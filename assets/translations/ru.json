@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "ads": "Реклама",
+    "live_view": "Прямой эфир",
+    "telemetry": "Телеметрия",
+    "settings": "Настройки"
+  },
+  "status": {
+    "live": "LIVE",
+    "offline": "ОФФЛАЙН",
+    "connecting": "Подключение...",
+    "connected": "Подключено",
+    "disconnected": "Отключено"
+  },
+  "kiosk": {
+    "no_ads": "В настоящее время реклама не назначена",
+    "loading": "Загрузка контента...",
+    "enter_pin": "Введите PIN",
+    "wrong_pin": "Неверный PIN",
+    "unlock": "Разблокировать",
+    "cancel": "Отмена",
+    "admin_mode": "Режим администратора",
+    "exit_kiosk": "Выйти из киоска"
+  },
+  "settings": {
+    "language": "Язык",
+    "brightness": "Яркость",
+    "volume": "Громкость",
+    "wifi": "Wi-Fi",
+    "about": "О приложении",
+    "version": "Версия",
+    "device_id": "ID устройства",
+    "battery": "Батарея",
+    "storage": "Свободная память",
+    "temperature": "Температура"
+  },
+  "telemetry": {
+    "cpu_temp": "Температура CPU",
+    "battery_level": "Уровень заряда",
+    "signal_strength": "Уровень сигнала",
+    "network_type": "Тип сети",
+    "uptime": "Время работы",
+    "data_usage": "Использование данных",
+    "last_ping": "Последний пинг"
+  },
+  "buttons": {
+    "retry": "Повторить",
+    "save": "Сохранить",
+    "apply": "Применить",
+    "close": "Закрыть",
+    "confirm": "Подтвердить"
+  }
+}

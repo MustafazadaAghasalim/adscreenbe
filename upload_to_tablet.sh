@@ -27,11 +27,11 @@ echo "✅ Device(s) detected:"
 echo "$DEVICES"
 
 # 3. Clean and Prep
-echo "🧹 Cleaning project artifacts..."
-"$FLUTTER_BIN" clean
+# echo "🧹 Cleaning project artifacts..."
+# "$FLUTTER_BIN" clean
 
-echo "📦 Fetching dependencies..."
-"$FLUTTER_BIN" pub get
+# echo "📦 Fetching dependencies..."
+# "$FLUTTER_BIN" pub get
 
 # 4. Build Release APK
 echo "🏗️ Building Release APK..."
@@ -54,7 +54,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # 6. Launch the App
-echo "🚀 Launching Adscreen..."
+echo "🚀 Forcing restart of Adscreen..."
+"$ADB_BIN" shell am force-stop "$PACKAGE_NAME"
+sleep 1
 "$ADB_BIN" shell am start -n "$PACKAGE_NAME/$PACKAGE_NAME.MainActivity"
 
-echo "✅ Deployment Successful! Adscreen is now running on your tablet."
+echo "✅ Deployment Successful! Adscreen is now restarting on your tablet."

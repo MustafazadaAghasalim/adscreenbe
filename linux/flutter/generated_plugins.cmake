@@ -4,6 +4,8 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   disk_space_2
+  flutter_webrtc
+  restart_app
   smart_auth
   url_launcher_linux
 )

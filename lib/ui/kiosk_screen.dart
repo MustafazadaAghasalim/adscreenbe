@@ -22,6 +22,7 @@ import '../config/server_config.dart';
 import '../admin_unlock_dialog.dart';
 import 'modern_pin_dialog.dart'; // For ModernPinKey widget used by _RemoteLockOverlay
 import '../services/security_service.dart';
+import '../services/remote_config_service.dart';
 
 // === NEW IMPORTS ===
 import '../services/device_settings_service.dart';
@@ -53,6 +54,7 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   bool _isLoading = true;
   StreamSubscription? _subscription;
   String? _activeActionId; // NEW: Track currently active action from navbar
+  int _navIndex = 0; // Track selected nav item for GlassNavigationBar
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -102,7 +104,12 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     if (_currentAdIndex >= _ads.length) _currentAdIndex = 0;
     final currentAd = _ads[_currentAdIndex];
     int duration = currentAd.duration;
-    if (duration < 5) duration = 5; // Safety minimum
+    final multiplier = RemoteConfigService.getAdRotationMultiplier();
+    duration = (duration * multiplier).round();
+
+    final minDuration = RemoteConfigService.getMinAdDurationSeconds();
+    final maxDuration = RemoteConfigService.getMaxAdDurationSeconds();
+    duration = duration.clamp(minDuration, maxDuration);
 
     print("KioskScreen: Playing ${currentAd.name} (${currentAd.type}) for ${duration}s");
     AdService().setCurrentCreative(currentAd.name);
@@ -179,19 +186,15 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     // 3. Restore system UI so user can navigate
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    // 4. Stop native lock task and kill app
+    // 4. Stop native lock task and exit to home without killing the app
     const platform = MethodChannel('com.adscreen.kiosk/telemetry');
     try {
       await platform.invokeMethod('stopKiosk');
       // Small delay to let native side fully release lock task
       await Future.delayed(const Duration(milliseconds: 300));
-      await platform.invokeMethod('killApp');
+      await platform.invokeMethod('exitToHome');
     } catch (e) {
       print("Error stopping native kiosk: $e");
-      // Fallback: try exitToHome if killApp fails
-      try {
-        await platform.invokeMethod('exitToHome');
-      } catch (_) {}
     }
   }
 

@@ -13,6 +13,9 @@ dependencies:
   # Real-time
   socket_io_client: ^2.0.3
   web_socket_channel: ^2.4.0
+  mqtt_client: ^10.11.1
+  flutter_webrtc: ^0.14.2
+  flutter_background_service: ^5.1.0
   
   # Firebase (For Real-time Ads)
   
@@ -30,7 +33,7 @@ dependencies:
   geolocator: ^10.0.0
   battery_plus: ^6.0.0
   wakelock_plus: ^1.2.0
-  package_info_plus: ^4.0.0
+  package_info_plus: ^9.0.0
   android_id: ^0.4.0
   kiosk_mode: ^0.8.0
   
@@ -39,7 +42,8 @@ dependencies:
   flutter_cache_manager: ^3.3.1
   video_player: ^2.8.2
   chewie: ^1.7.0
-  intl: ^0.19.0
+  intl: ^0.20.2
+  easy_localization: ^3.0.7
   google_fonts: ^6.1.0
   volume_controller: ^2.0.0
   disk_space_2: ^1.0.11
@@ -84,6 +88,7 @@ flutter:
   assets:
     - assets/images/
     - assets/fonts/
+    - assets/translations/
   
   fonts:
     - family: Kinetika

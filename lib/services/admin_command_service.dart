@@ -8,6 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../config/server_config.dart';
 import 'device_settings_service.dart';
 import 'tablet_service.dart';
+import 'ota_update_service.dart';
 
 /// Low-latency WebSocket channel for instant admin commands.
 /// Uses raw WebSocket (Node `/ws`) for:
@@ -111,82 +112,99 @@ class AdminCommandService {
   void _handleMessage(dynamic raw) {
     try {
       final data = jsonDecode(raw as String) as Map<String, dynamic>;
-      final type = (data['type'] ?? '') as String;
-      print('AdminWS: Received command: $type');
-
-      switch (type) {
-        case 'volume_change':
-          final volume = (data['volume'] as num?)?.toDouble() ?? 0.5;
-          VolumeController().setVolume(volume);
-          _ack(data);
-          break;
-
-        case 'screen_wipe':
-          _commandController.add(AdminCommand('screen_wipe', data));
-          _ack(data);
-          break;
-
-        case 'lock':
-          final pin = data['pin']?.toString();
-          TabletService().updateLockState(true, pin);
-          _ack(data);
-          break;
-
-        case 'unlock':
-          TabletService().updateLockState(false, null);
-          _ack(data);
-          break;
-
-        case 'reboot':
-          unawaited(_handleReboot(data));
-          break;
-
-        case 'screenshot':
-          _commandController.add(AdminCommand('screenshot', data));
-          _ack(data);
-          break;
-
-        case 'refresh_ads':
-          _commandController.add(AdminCommand('refresh_ads', data));
-          _ack(data);
-          break;
-
-        case 'brightness':
-          final brightness = (data['value'] as num?)?.toDouble() ?? 0.5;
-          _commandController.add(AdminCommand('brightness', {'value': brightness}));
-          _ack(data);
-          break;
-
-        case 'pong':
-          // Heartbeat response — connection is alive
-          break;
-
-        case 'device_settings_updated':
-          // Raw WS payload: { type, settings, timestamp } or flattened keys
-          final rawSettings = data['settings'];
-          final settings =
-              (rawSettings is Map ? rawSettings.cast<String, dynamic>() : data);
-          DeviceSettingsService().applySettings(settings);
-          _ack(data);
-          print('AdminWS: Device settings received & applied (${settings.length} keys)');
-          break;
-
-        default:
-          // Handle wrapped admin commands: { type: 'admin_command', command: 'reboot', ... }
-          if (type == 'admin_command' && data['command'] != null) {
-            final innerCommand = data['command'] as String;
-            print('AdminWS: Unwrapping admin_command → $innerCommand');
-            // Re-dispatch with the inner command as type
-            final rewrapped = Map<String, dynamic>.from(data);
-            rewrapped['type'] = innerCommand;
-            _handleMessage(jsonEncode(rewrapped));
-            return;
-          }
-          print('AdminWS: Unknown command type: $type');
-          _commandController.add(AdminCommand(type, data));
-      }
+      handleIncomingCommand(data);
     } catch (e) {
       print('AdminWS: Parse error: $e  raw=$raw');
+    }
+  }
+
+  void handleIncomingCommand(Map<String, dynamic> data) {
+    final type = (data['type'] ?? '') as String;
+    print('AdminWS: Received command: $type');
+
+    switch (type) {
+      case 'volume_change':
+      case 'set_volume':
+        final volume = (data['volume'] as num?)?.toDouble() ??
+            (data['value'] as num?)?.toDouble() ??
+            0.5;
+        VolumeController().setVolume(volume);
+        _ack(data);
+        break;
+
+      case 'screen_wipe':
+      case 'wipe_cache':
+        _commandController.add(AdminCommand(type, data));
+        _ack(data);
+        break;
+
+      case 'lock':
+        final pin = data['pin']?.toString();
+        TabletService().updateLockState(true, pin);
+        _ack(data);
+        break;
+
+      case 'unlock':
+        TabletService().updateLockState(false, null);
+        _ack(data);
+        break;
+
+      case 'reboot':
+      case 'shutdown':
+        unawaited(_handleReboot(data));
+        break;
+
+      case 'screenshot':
+        _commandController.add(AdminCommand('screenshot', data));
+        _ack(data);
+        break;
+
+      case 'refresh_ads':
+        _commandController.add(AdminCommand('refresh_ads', data));
+        _ack(data);
+        break;
+
+      case 'brightness':
+      case 'set_brightness':
+        final brightness = (data['value'] as num?)?.toDouble() ?? 0.5;
+        _commandController.add(AdminCommand('brightness', {'value': brightness}));
+        _ack(data);
+        break;
+
+      case 'pong':
+        // Heartbeat response — connection is alive
+        break;
+
+      case 'update_app':
+        final tId = TabletService().tabletId ?? 'unknown';
+        print('AdminWS: Triggering OTA update check for $tId');
+        // This will check the backend and auto-download if an update exists
+        OTAUpdateService.checkForUpdates(tId);
+        _ack(data);
+        break;
+
+      case 'device_settings_updated':
+        // Raw WS payload: { type, settings, timestamp } or flattened keys
+        final rawSettings = data['settings'];
+        final settings =
+            (rawSettings is Map ? rawSettings.cast<String, dynamic>() : data);
+        DeviceSettingsService().applySettings(settings);
+        _ack(data);
+        print('AdminWS: Device settings received & applied (${settings.length} keys)');
+        break;
+
+      default:
+        // Handle wrapped admin commands: { type: 'admin_command', command: 'reboot', ... }
+        if (type == 'admin_command' && data['command'] != null) {
+          final innerCommand = data['command'] as String;
+          print('AdminWS: Unwrapping admin_command → $innerCommand');
+          final rewrapped = Map<String, dynamic>.from(data);
+          rewrapped['type'] = innerCommand;
+          handleIncomingCommand(rewrapped);
+          return;
+        }
+        print('AdminWS: Unknown command type: $type');
+        _commandController.add(AdminCommand(type, data));
     }
   }
 

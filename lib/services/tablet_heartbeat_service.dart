@@ -137,7 +137,10 @@ class TabletHeartbeatService {
         break;
       case 'update_app':
         if (payload != null && payload['url'] != null) {
-           OTAUpdateService.downloadAndInstallUpdate(payload['url'], 'remote');
+           OTAUpdateService.handleRemoteCommand({
+             'action': 'install_apk',
+             'params': {'download_url': payload['url'], 'version': payload['version'] ?? 'remote'},
+           });
         }
         break;
     }

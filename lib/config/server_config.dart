@@ -18,4 +18,13 @@ class ServerConfig {
   static const String intruderAlertEndpoint = "$baseUrl/api/upload_intruder_alert";
   static const int updateIntervalSeconds = 30;
   static const String deviceSettingsEndpoint = "$baseUrl/api/admin/get_device_settings";
+
+  // Module 1: backend JSON config polling
+  static const String tabletConfigEndpoint = "$baseUrl/api/tablet/config";
+
+  // Module 2: MQTT command bus
+  static const String mqttHost = "adscreen.az";
+  static const int mqttPort = 1883;
+  static const String mqttUsername = "adscreen_tablet";
+  static const String mqttPassword = "change-me-in-prod";
 }

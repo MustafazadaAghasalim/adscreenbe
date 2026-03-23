@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
@@ -100,7 +101,10 @@ class ScreenCaptureService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification("Screen capture ready"))
+        // NOTE: Do NOT call startForeground() here.
+        // Android 14+ (API 34) requires a valid MediaProjection token BEFORE
+        // startForeground() for mediaProjection-type services.
+        // We call startForeground() in onStartCommand() after obtaining the token.
 
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()
@@ -121,19 +125,39 @@ class ScreenCaptureService : Service() {
 
         Log.i(TAG, "onStartCommand: mode=$mode tablet=$tabletId")
 
+        // For stop_stream, the service is already in foreground — just stop and exit
+        if (mode == "stop_stream") {
+            stopStreaming()
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        // Obtain MediaProjection token BEFORE calling startForeground()
+        // Android 14+ requires the token to exist first for mediaProjection FGS type
+        val projectionOk = ensureProjection(intent)
+
+        if (!projectionOk) {
+            Log.e(TAG, "No valid projection — cannot start. Stopping service.")
+            // Must still call startForeground to avoid crash, but use SHORT_SERVICE type or default
+            startForeground(NOTIFICATION_ID, buildNotification("Screen capture failed — no permission"))
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        // Now safe to start foreground with mediaProjection type
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                NOTIFICATION_ID,
+                buildNotification("Screen capture active"),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification("Screen capture active"))
+        }
+
         when (mode) {
-            "screenshot" -> {
-                ensureProjection(intent)
-                captureAndUpload()
-            }
-            "stream" -> {
-                ensureProjection(intent)
-                startStreaming()
-            }
-            "stop_stream" -> {
-                stopStreaming()
-                stopSelf()
-            }
+            "screenshot" -> captureAndUpload()
+            "stream" -> startStreaming()
             else -> Log.w(TAG, "Unknown mode: $mode")
         }
 
@@ -151,13 +175,11 @@ class ScreenCaptureService : Service() {
     //  MediaProjection Setup
     // ═══════════════════════════════════════════════════════════════════
 
-    private fun ensureProjection(intent: Intent?) {
-        if (mediaProjection != null) return
+    private fun ensureProjection(intent: Intent?): Boolean {
+        if (mediaProjection != null) return true
 
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-        // Device Owner path: use shell command to grant projection permission
-        // The projection is obtained from cached result code/data
         val resultCode = intent?.getIntExtra("result_code", Activity.RESULT_CANCELED)
             ?: Activity.RESULT_CANCELED
         val resultData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -172,8 +194,10 @@ class ScreenCaptureService : Service() {
             mediaProjection?.registerCallback(projectionCallback, handler)
             setupVirtualDisplay()
             Log.i(TAG, "MediaProjection obtained from intent extras")
+            return true
         } else {
             Log.e(TAG, "No valid projection result. For Device Owner: obtain once from Activity and cache.")
+            return false
         }
     }
 

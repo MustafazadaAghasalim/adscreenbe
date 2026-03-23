@@ -110,19 +110,17 @@ provision_device() {
     log_step "Checking existing Device Owner..."
     local existing_do
     existing_do=$(adb_cmd "$serial" shell dpm list-owners 2>/dev/null || echo "")
-    if echo "$existing_do" | grep -q "Device Owner"; then
-        if echo "$existing_do" | grep -q "$PACKAGE"; then
-            log_ok "Already our Device Owner — skipping set-device-owner"
-        else
-            log_fail "Another app is Device Owner. Factory reset required."
-            return 1
-        fi
+    if echo "$existing_do" | grep -q "$PACKAGE"; then
+        log_ok "Already our Device Owner — skipping set-device-owner"
+    elif echo "$existing_do" | grep -qi "device owner\|owner\|admin"; then
+        log_fail "Another app appears to be Device Owner. Factory reset required."
+        return 1
     else
         # ── 4. Set Device Owner ──
         log_step "Setting Device Owner: $ADMIN_RECEIVER"
         local result
         result=$(adb_cmd "$serial" shell dpm set-device-owner "$ADMIN_RECEIVER")
-        if echo "$result" | grep -qi "success\|active admin"; then
+        if echo "$result" | grep -qi "success\|active admin\|already set"; then
             log_ok "Device Owner set successfully"
         else
             log_fail "Failed to set Device Owner: $result"

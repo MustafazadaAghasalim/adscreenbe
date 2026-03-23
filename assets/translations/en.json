@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "ads": "Ads",
+    "live_view": "Live View",
+    "telemetry": "Telemetry",
+    "settings": "Settings"
+  },
+  "status": {
+    "live": "LIVE",
+    "offline": "OFFLINE",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "kiosk": {
+    "no_ads": "No ads currently assigned",
+    "loading": "Loading content...",
+    "enter_pin": "Enter PIN",
+    "wrong_pin": "Incorrect PIN",
+    "unlock": "Unlock",
+    "cancel": "Cancel",
+    "admin_mode": "Admin Mode",
+    "exit_kiosk": "Exit Kiosk"
+  },
+  "settings": {
+    "language": "Language",
+    "brightness": "Brightness",
+    "volume": "Volume",
+    "wifi": "Wi-Fi",
+    "about": "About",
+    "version": "Version",
+    "device_id": "Device ID",
+    "battery": "Battery",
+    "storage": "Storage Free",
+    "temperature": "Temperature"
+  },
+  "telemetry": {
+    "cpu_temp": "CPU Temperature",
+    "battery_level": "Battery Level",
+    "signal_strength": "Signal Strength",
+    "network_type": "Network Type",
+    "uptime": "Uptime",
+    "data_usage": "Data Usage",
+    "last_ping": "Last Ping"
+  },
+  "buttons": {
+    "retry": "Retry",
+    "save": "Save",
+    "apply": "Apply",
+    "close": "Close",
+    "confirm": "Confirm"
+  }
+}

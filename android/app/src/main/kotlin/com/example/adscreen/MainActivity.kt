@@ -664,7 +664,7 @@ class MainActivity : FlutterActivity() {
     override fun onResume() {
         super.onResume()
         val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        if (dpm.isDeviceOwnerApp(packageName)) {
+        if (dpm.isDeviceOwnerApp(packageName) && isKioskDesired) {
             android.util.Log.d("MainActivity", "Device Owner detected. Ensuring Lock Task is active...")
             val adminName = ComponentName(this, DeviceAdmin::class.java)
             dpm.setLockTaskPackages(adminName, arrayOf(packageName))
@@ -674,6 +674,8 @@ class MainActivity : FlutterActivity() {
             dpm.addUserRestriction(adminName, "no_config_notifications")
             dpm.addUserRestriction(adminName, "no_status_bar")
             startLockTask()
+        } else if (dpm.isDeviceOwnerApp(packageName) && !isKioskDesired) {
+            android.util.Log.d("MainActivity", "Kiosk mode paused by admin unlock, skipping Lock Task.")
         } else {
             android.util.Log.d("MainActivity", "Not device owner - kiosk mode limited.")
         }

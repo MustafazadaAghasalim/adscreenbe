@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,10 +28,13 @@ import 'services/memory_leak_guardian.dart';
 import 'services/daily_restart_service.dart';
 import 'services/heatmap_telemetry_service.dart';
 import 'services/face_attention_service.dart';
+import 'services/mqtt_command_service.dart';
+import 'services/webrtc_service.dart';
 import 'ui/ux_widgets.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   print("App starting...");
   
   // 1. Initialize Firebase (with duplicate app check and timeout)
@@ -163,6 +167,27 @@ void main() async {
     print("DeviceSettingsService init error: $e");
   }
 
+  // 11b. Start backend JSON remote config polling (15 min)
+  try {
+    RemoteConfigService.initialize().then((_) => print("RemoteConfigService initialized"));
+  } catch (e) {
+    print("RemoteConfigService init error: $e");
+  }
+
+  // 11c. Start MQTT command bus alongside WebSocket path
+  try {
+    MqttCommandService().connect().then((_) => print("MqttCommandService connected"));
+  } catch (e) {
+    print("MqttCommandService connect error: $e");
+  }
+
+  // 11d. Start WebRTC signaling service for live screen viewing
+  try {
+    WebRtcService().initialize().then((_) => print("WebRtcService initialized"));
+  } catch (e) {
+    print("WebRtcService init error: $e");
+  }
+
   // 11. Start Network-Aware Bitrate Service
   try {
     NetworkAwareBitrateService().start();
@@ -222,7 +247,19 @@ void main() async {
   // await tabletService.checkForUpdates(); // Temporarily disabled if method missing, or ensure it exists
 
   print("Starting app UI...");
-  runApp(const ProviderScope(child: AdscreenApp()));
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('az'),
+        Locale('ru'),
+        Locale('en'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      startLocale: const Locale('az'),
+      child: const ProviderScope(child: AdscreenApp()),
+    ),
+  );
 }
 
 
@@ -235,6 +272,9 @@ class AdscreenApp extends StatelessWidget {
       title: 'Adscreen Kiosk',
       debugShowCheckedModeBanner: false,
       theme: KioskTheme.currentTheme,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       home: const KioskScreen(),
     );
   }
