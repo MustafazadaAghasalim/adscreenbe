@@ -58,8 +58,8 @@ class ProofOfPlayService {
       },
     );
 
-    // Start periodic upload check every 60 seconds
-    _uploadTimer = Timer.periodic(const Duration(seconds: 60), (_) => _tryBatchUpload());
+    // Start periodic upload check every 5 minutes (saves battery vs 60s)
+    _uploadTimer = Timer.periodic(const Duration(seconds: 300), (_) => _tryBatchUpload());
     print("ProofOfPlay: SQLite buffer initialized.");
   }
 

@@ -21,7 +21,7 @@ class HeatmapTelemetryService {
   static const int maxBufferSize = 200;
 
   /// Upload interval
-  static const Duration uploadInterval = Duration(minutes: 5);
+  static const Duration uploadInterval = Duration(minutes: 15);
 
   void start({required String deviceId}) {
     _deviceId = deviceId;

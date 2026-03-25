@@ -23,6 +23,8 @@ class TelemetryService {
   final _deviceInfo = DeviceInfoPlugin();
   Timer? _timer;
   bool _started = false;
+  bool _batterySaveMode = false;
+  int _lastBatteryLevel = 100;
 
   // Use centralized ServerConfig instead of hardcoded URLs
   String get baseUrl => ServerConfig.baseUrl;
@@ -30,9 +32,22 @@ class TelemetryService {
   void start() {
     if (_started) return;
     _started = true;
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) => _sendTelemetry());
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) => _sendTelemetry());
     _sendTelemetry(); // Send immediately
-    print("TelemetryService: Started sending to $baseUrl every 15s");
+    print("TelemetryService: Started sending to $baseUrl every 30s");
+  }
+
+  /// Adjust polling rate based on battery level
+  void _checkBatterySaveMode(int batteryLevel) {
+    final shouldSave = batteryLevel <= 20;
+    if (shouldSave != _batterySaveMode) {
+      _batterySaveMode = shouldSave;
+      _timer?.cancel();
+      final interval = _batterySaveMode ? 120 : 30; // 2 min in save mode, 30s normal
+      _timer = Timer.periodic(Duration(seconds: interval), (_) => _sendTelemetry());
+      print("TelemetryService: Battery save mode ${_batterySaveMode ? 'ON (120s)' : 'OFF (30s)'}");
+    }
+    _lastBatteryLevel = batteryLevel;
   }
 
   Future<String> _getIpAddress() async {
@@ -105,12 +120,15 @@ class TelemetryService {
       final int batteryLevel = await _battery.batteryLevel;
       final batteryState = await _battery.batteryState;
 
+      // Auto-adjust polling rate based on battery level
+      _checkBatterySaveMode(batteryLevel);
+
       // Get Location & Speed with Timeout
       Position? position;
       try {
         position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 8),
+          desiredAccuracy: LocationAccuracy.medium,
+          timeLimit: const Duration(seconds: 5),
         );
       } catch (e) {
         print("TelemetryService: GPS Timeout or Error: $e");
@@ -143,10 +161,10 @@ class TelemetryService {
         osVersion = "Android ${androidInfo.version.release}";
       }
 
-      // Get REAL sensor values from native Android
-      final double temperature = await _getBatteryTemperature();
-      final double brightness = await _getScreenBrightness();
-      final String signalStrength = await _getSignalStrength();
+      // Get REAL sensor values from native Android (skip in battery save mode)
+      final double temperature = _batterySaveMode ? 0.0 : await _getBatteryTemperature();
+      final double brightness = _batterySaveMode ? 0.0 : await _getScreenBrightness();
+      final String signalStrength = _batterySaveMode ? "Save Mode" : await _getSignalStrength();
 
       final payload = {
         "tablet_id": tabletId,

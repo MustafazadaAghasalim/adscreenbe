@@ -27,8 +27,8 @@ class FaceAttentionService {
     _deviceId = deviceId;
     _isActive = true;
 
-    // Report metrics every 10 minutes
-    _reportTimer = Timer.periodic(const Duration(minutes: 10), (_) => _uploadMetrics());
+    // Report metrics every 30 minutes
+    _reportTimer = Timer.periodic(const Duration(minutes: 30), (_) => _uploadMetrics());
 
     print("FaceAttention: Service started for device $deviceId");
     print("FaceAttention: NOTE — Camera integration requires platform setup.");
