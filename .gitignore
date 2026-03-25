@@ -56,6 +56,7 @@ _native_backup/
 
 # Webapp / Next.js directories (separate repos)
 AdscreenWebsite copy/
+AdscreenWebsite copy */
 adscreen-nextjs/
 
 # Node / build artifacts
