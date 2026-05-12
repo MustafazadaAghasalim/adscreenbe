@@ -35,6 +35,7 @@ import 'millionaire_game_screen.dart';
 
 Future<void> toggleKiosk(bool enable) async {
   if (enable) {
+    KioskLifecycleObserver.isAdminUnlocked = false; // re-entering kiosk resets flag
     await startKioskMode();
   } else {
     await stopKioskMode();
@@ -67,17 +68,8 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
        AdService().initSocket();
        _focusNode.requestFocus();
-       
-       // Lock Volume to 50% (or whatever is current) to prevent user changes
-       VolumeController().showSystemUI = false; // Hide the volume bar
-    });
-    
-    // Listen for volume changes and reset them if they happen
-    VolumeController().listener((volume) {
-      // If we want to block volume changes, we can force it back
-      // But for now, just hiding the UI is a good first step.
-      // If the user really wants it BLOCKED:
-      // VolumeController().setVolume(0.5); 
+       // Allow passengers to control volume — show the system volume bar
+       VolumeController().showSystemUI = true;
     });
 
     // Subscribe to Ad updates
@@ -186,6 +178,9 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
   }
 
   Future<void> _handleAdminUnlock() async {
+    // 0. Signal kiosk lifecycle to pause force-resume behaviour
+    KioskLifecycleObserver.isAdminUnlocked = true;
+
     // 1. Unregister lifecycle observer FIRST to prevent it from re-enabling kiosk
     KioskLifecycleObserver().unregister();
 
@@ -200,15 +195,20 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
     // 3. Restore system UI so user can navigate
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    // 4. Stop native lock task and exit to home without killing the app
+    // 4. Stop native lock task and kill the app completely
     const platform = MethodChannel('com.adscreen.kiosk/telemetry');
     try {
       await platform.invokeMethod('stopKiosk');
       // Small delay to let native side fully release lock task
       await Future.delayed(const Duration(milliseconds: 300));
-      await platform.invokeMethod('exitToHome');
+      // Kill the app so Android's default launcher takes over
+      await platform.invokeMethod('killApp');
     } catch (e) {
       print("Error stopping native kiosk: $e");
+      // Fallback: try exitToHome
+      try {
+        await platform.invokeMethod('exitToHome');
+      } catch (_) {}
     }
   }
 
@@ -224,15 +224,8 @@ class _KioskScreenState extends ConsumerState<KioskScreen> {
 
         return KeyboardListener(
           focusNode: _focusNode,
-          onKeyEvent: (event) {
-            // Block Volume Keys
-            if (event.logicalKey == LogicalKeyboardKey.audioVolumeUp ||
-                event.logicalKey == LogicalKeyboardKey.audioVolumeDown ||
-                event.logicalKey == LogicalKeyboardKey.audioVolumeMute) {
-              // We don't call any logic, effectively swallowing the key event
-              // Note: On some Android devices, system volume UI might still appear
-              // but the app won't react to it.
-            }
+          onKeyEvent: (_) {
+            // Volume keys are allowed through — passengers can adjust volume
           },
           child: PopScope(
             canPop: false,
@@ -372,12 +365,9 @@ class _AnimatedFallbackUIState extends State<_AnimatedFallbackUI> with SingleTic
             ),
           ),
           
-          // Glass Overlay for depth
+          // Darken overlay (lightweight — no BackdropFilter for GPU compat)
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: Container(color: Colors.black.withOpacity(0.2)),
-            ),
+            child: Container(color: Colors.black.withOpacity(0.3)),
           ),
           
           Center(
@@ -662,23 +652,23 @@ class BottomBar extends StatelessWidget {
                   children: [
                     // Dynamic QR Code
                     Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: QrImageView(
                         data: qrUrl,
                         version: QrVersions.auto,
-                        size: 50,
+                        size: 60,
                         backgroundColor: Colors.white,
                         errorStateBuilder: (ctx, err) => const Icon(
                             Icons.qr_code,
                             color: Colors.black,
-                            size: 50),
+                            size: 60),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     // Contact Info
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
