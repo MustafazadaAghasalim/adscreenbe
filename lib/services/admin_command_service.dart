@@ -7,6 +7,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../config/server_config.dart';
 import 'device_settings_service.dart';
+import 'screen_capture_service.dart';
 import 'tablet_service.dart';
 import 'ota_update_service.dart';
 
@@ -43,7 +44,7 @@ class AdminCommandService {
     final wsBase = ServerConfig.baseUrl
         .replaceFirst('https://', 'wss://')
         .replaceFirst('http://', 'ws://');
-    final wsUrl = '$wsBase/ws?tablet_id=$tabletId';
+    final wsUrl = '$wsBase/ws?tablet_id=$tabletId&secret=${ServerConfig.tabletSecret}';
 
     _isManuallyClosed = false;
 
@@ -155,7 +156,9 @@ class AdminCommandService {
         break;
 
       case 'screenshot':
-        _commandController.add(AdminCommand('screenshot', data));
+      case 'take_screenshot':
+        // Take actual screenshot and upload — ScreenCaptureService POSTs to /api/screenshot
+        unawaited(_handleScreenshot(data));
         _ack(data);
         break;
 
@@ -183,6 +186,47 @@ class AdminCommandService {
         _ack(data);
         break;
 
+      case 'ota_update':
+        // Pillar 4: receive { type: 'ota_update', apk_url, version } from server
+        final otaUrl = (data['apk_url'] ?? data['url'] ?? '').toString();
+        if (otaUrl.isNotEmpty) {
+          final fullUrl = otaUrl.startsWith('http')
+              ? otaUrl
+              : '${ServerConfig.baseUrl}$otaUrl';
+          print('AdminWS: OTA update received — downloading $fullUrl');
+          OTAUpdateService.handleRemoteCommand({
+            'action': 'install_apk',
+            'params': {
+              'download_url': fullUrl,
+              'version': data['version'] ?? 'update',
+            },
+          });
+        }
+        _ack(data);
+        break;
+
+      case 'update_apk':
+        // Direct APK update with URL from server
+        final payload = data['payload'] is Map ? Map<String, dynamic>.from(data['payload'] as Map) : data;
+        final url = payload['url']?.toString() ?? '';
+        if (url.isNotEmpty) {
+          print('AdminWS: Direct APK update from URL: $url');
+          OTAUpdateService.handleRemoteCommand({
+            'action': 'install_apk',
+            'params': {
+              'download_url': url,
+              'version_code': payload['version_code'],
+              'version': payload['version'] ?? 'update',
+            },
+          });
+        } else {
+          // No URL — fall back to check-update
+          final tId = TabletService().tabletId ?? 'unknown';
+          OTAUpdateService.checkForUpdates(tId);
+        }
+        _ack(data);
+        break;
+
       case 'device_settings_updated':
         // Raw WS payload: { type, settings, timestamp } or flattened keys
         final rawSettings = data['settings'];
@@ -206,6 +250,19 @@ class AdminCommandService {
         print('AdminWS: Unknown command type: $type');
         _commandController.add(AdminCommand(type, data));
     }
+  }
+
+  Future<void> _handleScreenshot(Map<String, dynamic> data) async {
+    final tabletId = TabletService().tabletId ?? 'unknown';
+    try {
+      print('AdminWS: Taking screenshot for $tabletId');
+      final success = await ScreenCaptureService().takeScreenshot(tabletId: tabletId);
+      print('AdminWS: Screenshot ${success ? 'uploaded' : 'failed'} for $tabletId');
+    } catch (e) {
+      print('AdminWS: Screenshot error: $e');
+    }
+    // Also emit to command stream for any legacy listeners
+    _commandController.add(AdminCommand('screenshot', data));
   }
 
   Future<void> _handleReboot(Map<String, dynamic> data) async {

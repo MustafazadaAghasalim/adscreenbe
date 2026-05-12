@@ -10,6 +10,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import '../config/server_config.dart';
 import 'ad_service.dart';
 import 'tablet_service.dart';
+import 'admin_command_service.dart';
+import 'silent_update_service.dart';
 
 class TelemetryService {
   static final TelemetryService _instance = TelemetryService._internal();
@@ -25,6 +27,11 @@ class TelemetryService {
   bool _started = false;
   bool _batterySaveMode = false;
   int _lastBatteryLevel = 100;
+
+  // Cached app version — read once from native, stays constant until reinstall
+  String _appVersion = '0.0.0';
+  int _appVersionCode = 0;
+  bool _versionFetched = false;
 
   // Use centralized ServerConfig instead of hardcoded URLs
   String get baseUrl => ServerConfig.baseUrl;
@@ -166,8 +173,22 @@ class TelemetryService {
       final double brightness = _batterySaveMode ? 0.0 : await _getScreenBrightness();
       final String signalStrength = _batterySaveMode ? "Save Mode" : await _getSignalStrength();
 
+      // Read app version from native (cached after first call)
+      if (!_versionFetched) {
+        try {
+          final info = await SilentUpdateService().getVersionInfo();
+          _appVersion = (info['versionName'] as String?) ?? '0.0.0';
+          _appVersionCode = (info['versionCode'] as num?)?.toInt() ?? 0;
+          _versionFetched = true;
+        } catch (e) {
+          print("TelemetryService: Could not read app version: $e");
+        }
+      }
+
       final payload = {
         "tablet_id": tabletId,
+        "app_version": _appVersion,
+        "app_version_code": _appVersionCode,
         "battery_percent": batteryLevel,
         "is_charging": batteryState == BatteryState.charging || batteryState == BatteryState.full,
         "charging_status": batteryState.toString().split('.').last,
@@ -202,6 +223,19 @@ class TelemetryService {
           final String? unlockPin = data['unlock_pin']?.toString();
           if (locked != null) {
             TabletService().updateLockState(locked, unlockPin);
+          }
+
+          // Handle pending commands delivered via heartbeat response
+          final pendingCommands = data['pending_commands'];
+          if (pendingCommands is List && pendingCommands.isNotEmpty) {
+            print("TelemetryService: Received ${pendingCommands.length} pending command(s) via heartbeat");
+            for (final cmd in pendingCommands) {
+              if (cmd is Map) {
+                final cmdMap = Map<String, dynamic>.from(cmd);
+                cmdMap['type'] = cmdMap['command'] ?? cmdMap['type'] ?? '';
+                AdminCommandService().handleIncomingCommand(cmdMap);
+              }
+            }
           }
         }
       }
