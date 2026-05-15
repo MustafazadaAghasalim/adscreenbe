@@ -27,4 +27,9 @@ class ServerConfig {
   static const int mqttPort = 1883;
   static const String mqttUsername = "adscreen_tablet";
   static const String mqttPassword = "change-me-in-prod";
+
+  // WebSocket auth secret appended to ws://.../ws?tablet_id=...&secret=...
+  // Override per-environment via --dart-define=TABLET_SECRET=... if needed.
+  static const String tabletSecret =
+      String.fromEnvironment('TABLET_SECRET', defaultValue: '');
 }

@@ -11,6 +11,12 @@ class KioskLifecycleObserver extends WidgetsBindingObserver {
   factory KioskLifecycleObserver() => _instance;
   KioskLifecycleObserver._internal();
 
+  /// When true, the lifecycle observer skips its force-resume behaviour so an
+  /// admin can leave the kiosk app (settings, system UI, etc.) without being
+  /// snapped back. Set to `true` from the admin unlock flow and reset to
+  /// `false` when re-entering kiosk mode.
+  static bool isAdminUnlocked = false;
+
   bool _isRegistered = false;
   int _pauseCount = 0;
   DateTime? _lastPaused;
