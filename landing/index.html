@@ -1,167 +1,492 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl-BE">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0A0D14" />
-  <title>Adscreen Belgium — Coming Soon</title>
-  <meta name="description" content="Adscreen Belgium — interactive in-vehicle advertising for taxis, rideshare and shared mobility. Launching in Brussels and Antwerp." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <meta property="og:title" content="Adscreen Belgium — Coming Soon" />
-  <meta property="og:description" content="Interactive in-vehicle advertising, coming to Belgium in 2026." />
+  <title>Adscreen Belgium — Digitale taxi-reclame, binnenkort in België</title>
+  <meta name="title" content="Adscreen Belgium — Digital Taxi Advertising | Brussels, Antwerp, Liège" />
+  <meta name="description" content="Premium in-vehicle digital advertising for taxis and rideshares across Belgium. Launching Q3 2026 in Brussels, Antwerp and Liège. Reserve your campaign today." />
+  <meta name="keywords" content="taxi reclame België, DOOH advertising Belgium, taxi advertising Brussels, digital out-of-home Belgium, rideshare advertising, taxi screens Antwerp, Liège digital advertising, Adscreen Belgium" />
+  <meta name="author" content="Adscreen Belgium" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="Dutch, French, English" />
+
+  <meta name="theme-color" content="#111827" />
+  <meta name="msapplication-TileColor" content="#111827" />
+
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://adscreen.be" />
+  <meta property="og:url" content="https://adscreen.be/" />
+  <meta property="og:title" content="Adscreen Belgium — Coming Q3 2026" />
+  <meta property="og:description" content="Interactive in-vehicle advertising across Brussels, Antwerp and Liège. Pre-launch list open now." />
+  <meta property="og:image" content="https://adscreen.be/og.svg" />
+  <meta property="og:site_name" content="Adscreen Belgium" />
+  <meta property="og:locale" content="nl_BE" />
+  <meta property="og:locale:alternate" content="fr_BE" />
+  <meta property="og:locale:alternate" content="en_US" />
+
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Adscreen Belgium — Coming Q3 2026" />
+  <meta name="twitter:description" content="Premium digital taxi advertising, launching across Belgium." />
+  <meta name="twitter:image" content="https://adscreen.be/og.svg" />
+
+  <link rel="canonical" href="https://adscreen.be/" />
+  <link rel="alternate" hreflang="nl-BE" href="https://adscreen.be/" />
+  <link rel="alternate" hreflang="fr-BE" href="https://adscreen.be/?lang=fr" />
+  <link rel="alternate" hreflang="en"    href="https://adscreen.be/?lang=en" />
+  <link rel="alternate" hreflang="x-default" href="https://adscreen.be/" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Adscreen Belgium",
+    "image": "https://adscreen.be/og.svg",
+    "@id": "https://adscreen.be",
+    "url": "https://adscreen.be",
+    "telephone": "+32 2 123 45 67",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Brussels",
+      "addressCountry": "BE"
+    },
+    "areaServed": ["Brussels", "Antwerp", "Liège"]
+  }
+  </script>
 </head>
+
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
   <div class="grain" aria-hidden="true"></div>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span class="brand-name">adscreen<span class="brand-tld">.be</span></span>
+  <!-- ─── Top ribbon (Coming Soon) ─── -->
+  <div class="ribbon" role="region" aria-label="Launch status">
+    <div class="ribbon-inner">
+      <span class="ribbon-flag" aria-hidden="true">🇧🇪</span>
+      <span class="ribbon-pulse" aria-hidden="true"></span>
+      <span class="ribbon-text">
+        <strong data-i18n="ribbon-strong">Coming Soon</strong>
+        <span data-i18n="ribbon-rest">— Adscreen Belgium launches Q3 2026. Reserve your campaign now.</span>
+      </span>
+      <a class="ribbon-cta" href="#notify" data-i18n="ribbon-cta">Get early access →</a>
     </div>
+  </div>
 
-    <nav class="lang" role="tablist" aria-label="Language">
-      <button class="lang-btn is-active" role="tab" data-lang="nl" aria-selected="true">NL</button>
-      <button class="lang-btn" role="tab" data-lang="fr" aria-selected="false">FR</button>
-      <button class="lang-btn" role="tab" data-lang="en" aria-selected="false">EN</button>
+  <!-- ─── Nav ─── -->
+  <header class="nav">
+    <a href="#top" class="brand" aria-label="Adscreen Belgium home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28">
+          <rect width="32" height="32" rx="7" fill="#0f1421"/>
+          <circle cx="16" cy="16" r="6" fill="#8B5CF6"/>
+          <circle cx="16" cy="16" r="11" fill="none" stroke="#8B5CF6" stroke-opacity="0.4" stroke-width="1.5"/>
+        </svg>
+      </span>
+      <span class="brand-text">adscreen<span class="brand-tld">.be</span></span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#how" data-i18n="nav-how">How it works</a>
+      <a href="#numbers" data-i18n="nav-numbers">By the numbers</a>
+      <a href="#coverage" data-i18n="nav-coverage">Coverage</a>
+      <a href="#faq" data-i18n="nav-faq">FAQ</a>
     </nav>
+
+    <div class="nav-actions">
+      <nav class="lang" role="tablist" aria-label="Language">
+        <button class="lang-btn is-active" role="tab" data-lang="nl" aria-selected="true">NL</button>
+        <button class="lang-btn" role="tab" data-lang="fr" aria-selected="false">FR</button>
+        <button class="lang-btn" role="tab" data-lang="en" aria-selected="false">EN</button>
+      </nav>
+      <a class="btn btn-primary nav-cta" href="#notify" data-i18n="nav-cta">Notify me</a>
+    </div>
   </header>
 
-  <main class="hero">
-    <div class="hero-inner">
-      <span class="eyebrow" data-i18n="eyebrow">Belgium · 2026</span>
+  <main id="main">
+    <!-- ─── Hero ─── -->
+    <section class="hero" id="top">
+      <div class="hero-text">
+        <span class="eyebrow" data-i18n="hero-eyebrow">Belgium · Q3 2026</span>
 
-      <h1 class="title">
-        <span data-i18n="title-1" class="title-line">Binnenkort</span>
-        <span data-i18n="title-2" class="title-line muted">in België</span>
-      </h1>
+        <h1 class="hero-title">
+          <span data-i18n="hero-title-1" class="hero-title-line">Digitale taxi-reclame</span>
+          <span data-i18n="hero-title-2" class="hero-title-line accent">die mensen écht zien.</span>
+        </h1>
 
-      <p class="lede" data-i18n="lede">
-        Interactieve advertenties op het scherm in elke taxi en rideshare —
-        binnenkort in Brussel, Antwerpen en daarbuiten.
-      </p>
+        <p class="hero-lede" data-i18n="hero-lede">
+          Adscreen brengt premium interactieve schermen naar elke taxi en rideshare in België.
+          Eén dashboard, duizenden ritten per dag, en spots die mensen actief aankijken in plaats van wegklikken.
+        </p>
 
-      <div class="meta">
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="meta-launch">Launch</span>
-          <span class="meta-value">Q3 2026</span>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#notify">
+            <span data-i18n="hero-cta-1">Reserve your launch slot</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost btn-lg" href="#how" data-i18n="hero-cta-2">See how it works</a>
         </div>
-        <span class="meta-sep" aria-hidden="true">·</span>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="meta-cities">Cities</span>
-          <span class="meta-value">Brussels · Antwerp · Liège</span>
-        </div>
-        <span class="meta-sep" aria-hidden="true">·</span>
-        <div class="meta-item">
-          <span class="meta-label" data-i18n="meta-fleet">Fleet target</span>
-          <span class="meta-value">500+ screens</span>
+
+        <div class="hero-trust">
+          <div class="trust-row">
+            <span class="trust-flag" aria-hidden="true">🇦🇿</span>
+            <span data-i18n="trust-text">Powered by the team behind</span>
+            <a href="https://adscreen.az" target="_blank" rel="noopener" class="trust-link">adscreen.az</a>
+          </div>
         </div>
       </div>
 
-      <form class="signup" id="signup" novalidate>
-        <label class="visually-hidden" for="email" data-i18n="email-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="jij@bedrijf.be"
-          autocomplete="email"
-          required
-        />
-        <button type="submit" class="cta">
-          <span data-i18n="cta">Hou me op de hoogte</span>
-          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-            <path d="M2 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
-      </form>
-
-      <div class="signals">
-        <div class="signal-row" data-i18n="signals-label">A new chapter of</div>
-        <a class="signal-link" href="https://adscreen.az" target="_blank" rel="noopener">
-          adscreen.az
-          <span class="signal-flag" aria-hidden="true">🇦🇿</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="hero-art" aria-hidden="true">
-      <div class="card card-a">
-        <div class="card-head">
-          <span class="card-dot dot-live"></span>
-          <span>Brussels · Tablet 12</span>
+      <div class="hero-visual" aria-hidden="true">
+        <!-- Stylised taxi-tablet device -->
+        <div class="device">
+          <div class="device-frame">
+            <div class="device-bar">
+              <span class="device-dot dot-live"></span>
+              <span class="device-time">14:32</span>
+              <span class="device-loc">Brussels · A-12 → Centraal</span>
+            </div>
+            <div class="device-screen">
+              <div class="ad-block">
+                <span class="ad-tag" data-i18n="hero-ad-tag">Sponsored · 15s</span>
+                <span class="ad-headline" data-i18n="hero-ad-headline">Boek je vlucht naar Lissabon</span>
+                <span class="ad-cta" data-i18n="hero-ad-cta">Tap to scan QR →</span>
+              </div>
+              <div class="ad-progress"><div class="ad-progress-fill"></div></div>
+              <div class="ad-meta">
+                <span data-i18n="hero-ad-meta-route">Route · BXL-A12</span>
+                <span data-i18n="hero-ad-meta-impressions">Vandaag · 1,284 weergaven</span>
+              </div>
+            </div>
+          </div>
+          <span class="device-shadow" aria-hidden="true"></span>
         </div>
-        <div class="card-body card-body-a">
-          <span class="card-headline">15s spot · Mediamarkt</span>
-          <span class="card-sub">Plays in <strong>00:08</strong></span>
-        </div>
-      </div>
 
-      <div class="card card-b">
-        <div class="card-head">
-          <span class="card-dot dot-warn"></span>
-          <span>Antwerp · Fleet 04</span>
+        <!-- Floating chips -->
+        <div class="chip chip-1">
+          <span class="chip-icon">📡</span>
+          <span><strong data-i18n="chip-1-strong">Live</strong> <span data-i18n="chip-1-rest">in 312 voertuigen</span></span>
         </div>
-        <div class="card-body">
-          <div class="bar"><div class="bar-fill" style="width:68%"></div></div>
-          <span class="card-sub">CTR · this week</span>
-          <span class="card-num">6.8%</span>
+        <div class="chip chip-2">
+          <span class="chip-icon">🎯</span>
+          <span><strong>6.8%</strong> <span data-i18n="chip-2-rest">CTR · deze week</span></span>
+        </div>
+        <div class="chip chip-3">
+          <span class="chip-icon">🇧🇪</span>
+          <span data-i18n="chip-3">NL · FR · EN, mee met de rit</span>
         </div>
       </div>
+    </section>
 
-      <div class="card card-c">
-        <div class="card-head">
-          <span class="card-dot dot-idle"></span>
-          <span>Liège · Survey</span>
-        </div>
-        <div class="card-body card-body-c">
-          <span class="card-sub">Top response</span>
-          <span class="card-headline">"Snellere wifi 📶"</span>
-          <span class="card-sub">1,204 antwoorden</span>
-        </div>
+    <!-- ─── Logo strip (placeholder partners) ─── -->
+    <section class="logos">
+      <p class="logos-label" data-i18n="logos-label">Pre-launch interest from</p>
+      <div class="logos-row" aria-hidden="true">
+        <span class="logo-mark">CABBE</span>
+        <span class="logo-mark">Antwerpen·Mobil</span>
+        <span class="logo-mark">RideBXL</span>
+        <span class="logo-mark">Liège Taxis</span>
+        <span class="logo-mark">FleetGent</span>
+        <span class="logo-mark">Charleroi-Drive</span>
       </div>
-    </div>
+    </section>
+
+    <!-- ─── How it works ─── -->
+    <section class="section" id="how">
+      <div class="section-head">
+        <span class="section-tag" data-i18n="how-tag">How it works</span>
+        <h2 class="section-title" data-i18n="how-title">Drie stappen tot je eerste live campagne.</h2>
+        <p class="section-lede" data-i18n="how-lede">
+          Geen wachttijd, geen drukwerk. Plan een spot, kies steden en doelgroep, en je campagne is binnen 24 uur live in honderden voertuigen.
+        </p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">01</span>
+          <h3 data-i18n="step-1-title">Plan</h3>
+          <p data-i18n="step-1-body">Kies steden, tijdsblokken en doelgroep. Upload je creatieve content of laat ons helpen bij de productie.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">02</span>
+          <h3 data-i18n="step-2-title">Run</h3>
+          <p data-i18n="step-2-body">Spots draaien automatisch op het hele wagenpark. Onze software past zich aan per route, taal en tijdstip.</p>
+        </li>
+        <li class="step">
+          <span class="step-num">03</span>
+          <h3 data-i18n="step-3-title">Measure</h3>
+          <p data-i18n="step-3-body">Real-time rapportage: impressies, CTR, geografische heatmap, QR-scans. Volledig transparant.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ─── Numbers ─── -->
+    <section class="numbers" id="numbers">
+      <div class="num">
+        <span class="num-val" data-target="500">500+</span>
+        <span class="num-label" data-i18n="num-1">Schermen bij lancering</span>
+      </div>
+      <div class="num">
+        <span class="num-val" data-target="50000">50.000+</span>
+        <span class="num-label" data-i18n="num-2">Ritten per week</span>
+      </div>
+      <div class="num">
+        <span class="num-val" data-target="3">3</span>
+        <span class="num-label" data-i18n="num-3">Steden bij start</span>
+      </div>
+      <div class="num">
+        <span class="num-val">24/7</span>
+        <span class="num-label" data-i18n="num-4">Live monitoring</span>
+      </div>
+    </section>
+
+    <!-- ─── Why Adscreen ─── -->
+    <section class="section" id="why">
+      <div class="section-head">
+        <span class="section-tag" data-i18n="why-tag">Why Adscreen</span>
+        <h2 class="section-title" data-i18n="why-title">Een advertentiekanaal dat niet weggeklikt kan worden.</h2>
+      </div>
+
+      <div class="features">
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">⚡</span>
+          <h3 data-i18n="feat-1-title">Real-time controle</h3>
+          <p data-i18n="feat-1-body">Pauzeer, swap of update creatief vanaf één dashboard — wijzigingen zijn binnen seconden live op het hele wagenpark.</p>
+        </article>
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">🎯</span>
+          <h3 data-i18n="feat-2-title">Geo- en tijd-targeting</h3>
+          <p data-i18n="feat-2-body">Andere boodschap in Brussel-Centrum dan op de E40. Spots schakelen automatisch per buurt, uur en taal.</p>
+        </article>
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">🤝</span>
+          <h3 data-i18n="feat-3-title">Interactief</h3>
+          <p data-i18n="feat-3-body">Tappable QR-codes, mini-surveys, en lead-formulieren — passagiers reageren in de rit zelf.</p>
+        </article>
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">📊</span>
+          <h3 data-i18n="feat-4-title">Volledige analytics</h3>
+          <p data-i18n="feat-4-body">Impressies, kijktijd, CTR, conversies — per spot, stad en uur. Exporteerbaar naar je bestaande stack.</p>
+        </article>
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">🌍</span>
+          <h3 data-i18n="feat-5-title">Drietalig, by design</h3>
+          <p data-i18n="feat-5-body">Nederlands, Frans en Engels. Spots kunnen taalvoorkeur van de passagier respecteren of taalgemengd zijn.</p>
+        </article>
+        <article class="feat">
+          <span class="feat-icon" aria-hidden="true">🔒</span>
+          <h3 data-i18n="feat-6-title">Brand-safe & GDPR-first</h3>
+          <p data-i18n="feat-6-body">Geen camera-tracking, geen persoonlijke data — alleen geanonimiseerde route- en kijkstatistieken. Compliant by default.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ─── Coverage ─── -->
+    <section class="section coverage" id="coverage">
+      <div class="section-head">
+        <span class="section-tag" data-i18n="coverage-tag">Coverage</span>
+        <h2 class="section-title" data-i18n="coverage-title">Start in 3 steden, daarna heel België.</h2>
+        <p class="section-lede" data-i18n="coverage-lede">
+          We beginnen waar het ritvolume het hoogst is en breiden uit naar elke provincie tegen midden 2027.
+        </p>
+      </div>
+
+      <div class="cities">
+        <article class="city city-live">
+          <header><span class="city-dot dot-live"></span><h3>Brussels</h3></header>
+          <p data-i18n="city-1">Bruxelles · Lancering Q3 2026 · ~220 voertuigen pilot</p>
+        </article>
+        <article class="city city-live">
+          <header><span class="city-dot dot-live"></span><h3>Antwerp</h3></header>
+          <p data-i18n="city-2">Antwerpen · Lancering Q3 2026 · ~180 voertuigen pilot</p>
+        </article>
+        <article class="city city-live">
+          <header><span class="city-dot dot-live"></span><h3>Liège</h3></header>
+          <p data-i18n="city-3">Luik · Lancering Q4 2026 · ~100 voertuigen pilot</p>
+        </article>
+        <article class="city city-soon">
+          <header><span class="city-dot dot-soon"></span><h3>Ghent</h3></header>
+          <p data-i18n="city-4">Gent · 2027</p>
+        </article>
+        <article class="city city-soon">
+          <header><span class="city-dot dot-soon"></span><h3>Charleroi</h3></header>
+          <p data-i18n="city-5">2027</p>
+        </article>
+        <article class="city city-soon">
+          <header><span class="city-dot dot-soon"></span><h3>Bruges</h3></header>
+          <p data-i18n="city-6">Brugge · 2027</p>
+        </article>
+        <article class="city city-soon">
+          <header><span class="city-dot dot-soon"></span><h3>Namur</h3></header>
+          <p data-i18n="city-7">Namen · 2027</p>
+        </article>
+        <article class="city city-soon">
+          <header><span class="city-dot dot-soon"></span><h3>Leuven</h3></header>
+          <p data-i18n="city-8">2027</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ─── Pricing teaser ─── -->
+    <section class="section pricing" id="pricing">
+      <div class="pricing-card">
+        <div class="pricing-tag" data-i18n="pricing-tag">Pricing · Pre-launch</div>
+        <h2 class="pricing-title" data-i18n="pricing-title">Pakketten openen Q3 2026.</h2>
+        <p class="pricing-lede" data-i18n="pricing-lede">
+          Vroege partners krijgen toegang tot launch-pricing — gegarandeerd onder marktprijs voor de eerste 12 maanden, plus eerste keuze van premium routes.
+        </p>
+        <ul class="pricing-perks">
+          <li data-i18n="perk-1">Vaste introductieprijs tot eind 2026</li>
+          <li data-i18n="perk-2">Eerste keuze: routes, tijdsblokken, steden</li>
+          <li data-i18n="perk-3">Toegang tot creatieve studio voor je eerste spot</li>
+          <li data-i18n="perk-4">Maandelijkse opzegbaarheid, geen jaarcontracten</li>
+        </ul>
+        <a class="btn btn-primary btn-lg" href="#notify" data-i18n="pricing-cta">Reserve your slot</a>
+      </div>
+    </section>
+
+    <!-- ─── Notify form ─── -->
+    <section class="section notify" id="notify">
+      <div class="notify-grid">
+        <div class="notify-text">
+          <span class="section-tag" data-i18n="notify-tag">Pre-launch list</span>
+          <h2 class="section-title" data-i18n="notify-title">Wees als eerste live in 2026.</h2>
+          <p class="section-lede" data-i18n="notify-lede">
+            Laat je gegevens achter en we nemen persoonlijk contact op zodra je markt opent. Geen nieuwsbrief, geen spam — alleen launch-updates.
+          </p>
+
+          <div class="contact-block">
+            <p class="contact-line"><strong data-i18n="contact-email-label">Direct contact</strong></p>
+            <p><a href="mailto:contact@adscreen.be">contact@adscreen.be</a></p>
+            <p><a href="tel:+3221234567">+32 2 123 45 67</a></p>
+          </div>
+        </div>
+
+        <form class="notify-form" id="notify-form" novalidate>
+          <div class="field">
+            <label for="name" data-i18n="form-name">Naam</label>
+            <input type="text" id="name" name="name" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="company" data-i18n="form-company">Bedrijf</label>
+            <input type="text" id="company" name="company" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="email" data-i18n="form-email">Werk-e-mail</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="role" data-i18n="form-role">Ik ben…</label>
+            <select id="role" name="role">
+              <option value="advertiser" data-i18n="role-advertiser">Adverteerder / Bureau</option>
+              <option value="fleet"      data-i18n="role-fleet">Taxi- of vlootbedrijf</option>
+              <option value="agency"     data-i18n="role-agency">Mediabureau</option>
+              <option value="other"      data-i18n="role-other">Iets anders</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="city" data-i18n="form-city">Stad van interesse</label>
+            <select id="city" name="city">
+              <option value="brussels">Brussels / Bruxelles</option>
+              <option value="antwerp">Antwerp / Anvers</option>
+              <option value="liege">Liège / Luik</option>
+              <option value="other" data-i18n="city-option-other">Andere stad</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-lg field-full" type="submit" data-i18n="form-submit">
+            Plaats me op de launch-lijst
+          </button>
+          <p class="form-status field-full" id="form-status" role="status" aria-live="polite"></p>
+          <p class="form-fine field-full" data-i18n="form-fine">
+            We slaan je gegevens veilig op en gebruiken ze alleen voor launch-communicatie. GDPR-compliant.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ─── FAQ ─── -->
+    <section class="section faq" id="faq">
+      <div class="section-head">
+        <span class="section-tag" data-i18n="faq-tag">FAQ</span>
+        <h2 class="section-title" data-i18n="faq-title">Veel gestelde vragen</h2>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary data-i18n="faq-1-q">Wanneer gaat Adscreen Belgium live?</summary>
+          <p data-i18n="faq-1-a">De officiële launch is gepland voor Q3 2026, beginnend in Brussel en Antwerpen. Pre-launch partners krijgen toegang in de pilotfase, vanaf juni 2026.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq-2-q">Hoe verschillen jullie van traditionele DOOH-borden?</summary>
+          <p data-i18n="faq-2-a">Onze schermen reizen mét de passagier — dezelfde rit door verschillende buurten, met spots die zich aanpassen aan locatie, tijdstip en taal. Je betaalt voor ritten met écht ogen, niet voor vaste billboards waar mensen langsrijden.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq-3-q">Welke creatieve formaten ondersteunen jullie?</summary>
+          <p data-i18n="faq-3-a">15- en 30-seconden video, statische beelden, interactieve QR-spots, en korte surveys. Alle formaten worden geleverd in NL/FR/EN en kunnen automatisch wisselen per route.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq-4-q">Hoe zit het met privacy en GDPR?</summary>
+          <p data-i18n="faq-4-a">Geen gezichtsherkenning, geen persoonsgegevens. We meten alleen geanonimiseerde route-statistieken en QR-scans waarvoor de passagier zelf actie neemt. Volledig GDPR-conform.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq-5-q">Kan ik nu al een campagne reserveren?</summary>
+          <p data-i18n="faq-5-a">Ja — laat je gegevens achter via het launch-formulier hierboven en we plannen een gesprek in deze maand. De eerste 20 partners krijgen launch-pricing onder marktprijs voor het hele eerste jaar.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="faq-6-q">Rij je voor een taxibedrijf? Doe mee.</summary>
+          <p data-i18n="faq-6-a">We zoeken vloten van 10+ voertuigen in Brussel, Antwerpen en Luik om mee te starten. Chauffeurs ontvangen maandelijkse vergoeding plus dashboard om verdiensten te zien. Schrijf je in via het formulier.</p>
+        </details>
+      </div>
+    </section>
   </main>
 
-  <section class="features">
-    <article class="feat">
-      <h3 data-i18n="feat-1-title">Live in elke rit</h3>
-      <p data-i18n="feat-1-body">
-        Centraal beheerd vanaf één dashboard. Bedrijven plannen campagnes,
-        chauffeurs zien niets behalve de rit.
-      </p>
-    </article>
-    <article class="feat">
-      <h3 data-i18n="feat-2-title">Lokale targeting</h3>
-      <p data-i18n="feat-2-body">
-        Geofencing per stad en buurt. Een spot in Brussel Centrum is anders
-        dan een spot bij Antwerpen Centraal.
-      </p>
-    </article>
-    <article class="feat">
-      <h3 data-i18n="feat-3-title">Tweetalig, by design</h3>
-      <p data-i18n="feat-3-body">
-        Nederlands, Frans en Engels — content schakelt mee met het publiek.
-      </p>
-    </article>
-  </section>
-
+  <!-- ─── Footer ─── -->
   <footer class="footer">
-    <div class="footer-left">
-      <span class="brand-name small">adscreen<span class="brand-tld">.be</span></span>
-      <span class="footer-meta" data-i18n="footer-meta">© 2026 · Brussels · contact@adscreen.be</span>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="24" height="24"><rect width="32" height="32" rx="7" fill="#0f1421"/><circle cx="16" cy="16" r="6" fill="#8B5CF6"/><circle cx="16" cy="16" r="11" fill="none" stroke="#8B5CF6" stroke-opacity="0.4" stroke-width="1.5"/></svg>
+          </span>
+          <span class="brand-text">adscreen<span class="brand-tld">.be</span></span>
+        </a>
+        <p class="footer-tagline" data-i18n="footer-tagline">Digitale taxi-reclame voor België — binnenkort live.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer-product">Product</h4>
+        <a href="#how" data-i18n="nav-how">How it works</a>
+        <a href="#why" data-i18n="footer-why">Why Adscreen</a>
+        <a href="#coverage" data-i18n="nav-coverage">Coverage</a>
+        <a href="#pricing" data-i18n="footer-pricing">Pricing</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer-company">Company</h4>
+        <a href="https://adscreen.az" target="_blank" rel="noopener" data-i18n="footer-az">Adscreen Azerbaijan</a>
+        <a href="#notify" data-i18n="footer-careers">Careers (soon)</a>
+        <a href="#notify" data-i18n="footer-press">Press</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer-contact">Contact</h4>
+        <a href="mailto:contact@adscreen.be">contact@adscreen.be</a>
+        <a href="tel:+3221234567">+32 2 123 45 67</a>
+        <span class="footer-addr" data-i18n="footer-addr">Brussels, Belgium</span>
+      </div>
     </div>
-    <div class="footer-right">
-      <a href="mailto:contact@adscreen.be">contact@adscreen.be</a>
+
+    <div class="footer-base">
+      <span data-i18n="footer-copy">© 2026 Adscreen Belgium · A new chapter of adscreen.az</span>
+      <div class="footer-legal">
+        <a href="#" data-i18n="footer-privacy">Privacy</a>
+        <a href="#" data-i18n="footer-terms">Terms</a>
+        <a href="#" data-i18n="footer-cookies">Cookies</a>
+      </div>
     </div>
   </footer>
 
