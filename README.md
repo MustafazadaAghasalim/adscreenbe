@@ -29,22 +29,40 @@ flutter build web --release
 The web admin is deployed as a static site to Vercel. The repository ships a
 [`vercel.json`](./vercel.json) that builds the Flutter web target via
 [`scripts/vercel_build.sh`](./scripts/vercel_build.sh) and serves
-`build/web/` with SPA rewrites.
+`build/web/` with SPA rewrites and immutable cache headers.
 
-To deploy:
+### Required Vercel project settings
+
+In the Vercel dashboard, open the project → **Settings → Build & Development
+Settings** and confirm:
+
+| Setting | Value |
+| --- | --- |
+| Framework Preset | **Other** |
+| Build Command | _Leave blank (uses `vercel.json`)_ or `bash scripts/vercel_build.sh` |
+| Output Directory | _Leave blank (uses `vercel.json`)_ or `build/web` |
+| Install Command | _Leave blank (uses `vercel.json`)_ or `echo skip-install` |
+| Root Directory | _Leave blank_ |
+| Node.js Version | 22.x (any; only used to bootstrap the build sandbox) |
+
+If the project was previously created with the Next.js scaffold, the saved
+**Framework Preset** can override `vercel.json` — explicitly switch it to
+**Other** before re-deploying.
+
+### Deploy
 
 ```bash
 # One-time
 vercel login
 vercel link
 
-# Trigger a production deploy
+# Trigger a production deploy from the CLI
 vercel --prod
 ```
 
-Or push to the GitHub repo connected to Vercel
-(<https://github.com/MustafazadaAghasalim/adscreenbe>) and Vercel will build on
-every push to `main`.
+Or push to the connected GitHub repo
+(<https://github.com/MustafazadaAghasalim/adscreenbe>) — Vercel builds on every
+push.
 
 ## Localisation
 

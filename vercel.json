@@ -4,6 +4,7 @@
   "outputDirectory": "build/web",
   "framework": null,
   "installCommand": "echo skip-install",
+  "ignoreCommand": "echo proceed",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],

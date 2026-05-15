@@ -1,0 +1,56 @@
+# Exclude everything Vercel doesn't need for the Flutter web build.
+# Trims the build context so we don't ship Android binaries, RPi tooling,
+# or the AdscreenAzerbaijan history bloat to Vercel.
+
+# Platform targets we don't build on Vercel
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Raspberry Pi infrastructure (deployed separately, not via Vercel)
+rpi-infrastructure/
+adscreen-local/
+arduino_stats_display/
+maintenance/
+
+# Old / pre-built artifacts
+releases/
+build/
+.dart_tool/
+.gradle/
+
+# JS scaffolds left over from the Azerbaijan project
+clerk-javascript/
+typescript
+
+# Logs, screenshots, ad-hoc PNGs
+build_log*.txt
+deployment_output.txt
+webapp_logs.zip
+Gemini_Generated_Image_*.png
+
+# Local-only scripts (RPi/tablet deploy helpers)
+deploy_*.sh
+deploy-*.sh
+upload_to_tablet.sh
+provision_device_owner.sh
+setup_*.sh
+start_*.sh
+build_and_deploy.sh
+update_arduino.sh
+
+# Python / serial tooling
+*.py
+arduino_stats_display/
+
+# Stray empty file from a broken script
+$BACKUP_FILE
+adscreen-webapp.PublishSettings
+adscreen-daemon.service
+
+# Misc
+test/
+.vscode/
+.metadata
