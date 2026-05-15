@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "ads": "Advertenties",
+    "live_view": "Live Weergave",
+    "telemetry": "Telemetrie",
+    "settings": "Instellingen"
+  },
+  "status": {
+    "live": "LIVE",
+    "offline": "OFFLINE",
+    "connecting": "Verbinden...",
+    "connected": "Verbonden",
+    "disconnected": "Verbinding verbroken"
+  },
+  "kiosk": {
+    "no_ads": "Momenteel geen advertenties toegewezen",
+    "loading": "Inhoud laden...",
+    "enter_pin": "Pincode invoeren",
+    "wrong_pin": "Onjuiste pincode",
+    "unlock": "Ontgrendelen",
+    "cancel": "Annuleren",
+    "admin_mode": "Beheerdermodus",
+    "exit_kiosk": "Kiosk verlaten"
+  },
+  "settings": {
+    "language": "Taal",
+    "brightness": "Helderheid",
+    "volume": "Volume",
+    "wifi": "Wi-Fi",
+    "about": "Over",
+    "version": "Versie",
+    "device_id": "Apparaat-ID",
+    "battery": "Batterij",
+    "storage": "Vrije opslag",
+    "temperature": "Temperatuur"
+  },
+  "telemetry": {
+    "cpu_temp": "CPU-temperatuur",
+    "battery_level": "Batterijniveau",
+    "signal_strength": "Signaalsterkte",
+    "network_type": "Netwerktype",
+    "uptime": "Bedrijfstijd",
+    "data_usage": "Datagebruik",
+    "last_ping": "Laatste ping"
+  },
+  "buttons": {
+    "retry": "Opnieuw proberen",
+    "save": "Opslaan",
+    "apply": "Toepassen",
+    "close": "Sluiten",
+    "confirm": "Bevestigen"
+  }
+}

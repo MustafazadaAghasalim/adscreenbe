@@ -27,7 +27,7 @@ class ScreenCaptureService {
   bool _hasConsent = false;
   bool get hasConsent => _hasConsent;
 
-  String _uploadUrl = 'https://adscreen.az/api/screenshot';
+  String _uploadUrl = 'https://adscreen.be/api/screenshot';
 
   /// Initialize and check for existing consent.
   Future<void> initialize({String? uploadUrl}) async {

@@ -148,7 +148,7 @@ class _PhoneAuthDialogState extends State<PhoneAuthDialog> {
                     filled: true,
                     fillColor: Colors.white10,
                   ),
-                  initialCountryCode: 'AZ', // Default to Azerbaijan
+                  initialCountryCode: 'BE', // Default to Belgium
                   style: const TextStyle(color: Colors.white),
                   dropdownTextStyle: const TextStyle(color: Colors.white),
                   onChanged: (phone) {

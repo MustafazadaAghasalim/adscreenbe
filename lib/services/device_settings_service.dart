@@ -46,9 +46,9 @@ class DeviceSettingsService {
       {'id': 'btn-3', 'label': 'Games', 'actionId': 'games'}
     ],
     'navbarTextColor': '#FFFFFF',
-    'navbarQrUrl': 'https://adscreen.az',
-    'navbarWebsiteText': 'adscreen.az',
-    'navbarPhoneText': '+994 51 504 23 23',
+    'navbarQrUrl': 'https://adscreen.be',
+    'navbarWebsiteText': 'adscreen.be',
+    'navbarPhoneText': '+32 2 123 45 67',
     'navbarTimerTextColor': '#FFFFFF',
     'navbarTimerBorderColor': '#7C3AED',
     'navbarTimerStrokeWidth': 5,

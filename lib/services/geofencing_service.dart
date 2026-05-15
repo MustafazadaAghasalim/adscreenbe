@@ -17,34 +17,34 @@ class GeofencingService {
 
   Stream<GeofenceTrigger> get triggers => _triggerController.stream;
 
-  /// Baku city-center default zones
-  static final List<Geofence> defaultBakuZones = [
+  /// Belgium default zones — major cities & airport.
+  static final List<Geofence> defaultBelgiumZones = [
     Geofence(
-      id: 'baku_center',
-      name: 'Baku City Center',
-      lat: 40.4093,
-      lng: 49.8671,
+      id: 'brussels_center',
+      name: 'Brussels City Center',
+      lat: 50.8503,
+      lng: 4.3517,
       radiusMeters: 2000,
     ),
     Geofence(
-      id: 'baku_port',
-      name: 'Baku Port / Boulevard',
-      lat: 40.3656,
-      lng: 49.8352,
-      radiusMeters: 1500,
+      id: 'antwerp_center',
+      name: 'Antwerp City Center',
+      lat: 51.2194,
+      lng: 4.4025,
+      radiusMeters: 2000,
     ),
     Geofence(
-      id: 'baku_airport',
-      name: 'Heydar Aliyev Airport',
-      lat: 40.4675,
-      lng: 50.0467,
+      id: 'brussels_airport',
+      name: 'Brussels Airport (Zaventem)',
+      lat: 50.9014,
+      lng: 4.4844,
       radiusMeters: 3000,
     ),
   ];
 
   Future<void> start({List<Geofence>? customFences}) async {
     _fences.clear();
-    _fences.addAll(customFences ?? defaultBakuZones);
+    _fences.addAll(customFences ?? defaultBelgiumZones);
 
     // Check permissions
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();

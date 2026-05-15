@@ -171,7 +171,7 @@ In Serial Monitor, watch for:
 - Receives JSON from Pi, parses with ArduinoJson
 - Sends commands: reboot_pi, restart_docker, update_apt, check_ssl, etc.
 - Touch interface: 6 server buttons, 3 language buttons
-- Multi-language: English, Azerbaijani, Russian (PROGMEM optimized)
+- Multi-language: English, Dutch, French (PROGMEM optimized)
 
 ### **Serial Protocol** (Both sides)
 ```

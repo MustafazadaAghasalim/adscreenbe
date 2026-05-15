@@ -1,16 +1,65 @@
-# adscreen_kiosk
+# Adscreen Belgium
 
-A new Flutter project.
+Adscreen Belgium is the Belgian deployment of the Adscreen interactive in-vehicle
+advertising platform. The codebase is a Flutter app with two runtime targets:
 
-## Getting Started
+- **Android tablet kiosk** — the customer-facing screen mounted in the vehicle.
+- **Web admin dashboard** — operator console for managing devices, ads, and live telemetry.
 
-This project is a starting point for a Flutter application.
+This repo mirrors the structure of [adscreen.az](https://adscreen.az) (Azerbaijan)
+and shares the same backend contract; only locale, branding, and regional defaults
+differ.
 
-A few resources to get you started if this is your first Flutter project:
+## Quick start
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+# Run the Android kiosk
+flutter run
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Run the web admin (Chrome)
+flutter run -d chrome
+
+# Production web build (output: build/web/)
+flutter build web --release
+```
+
+## Web deployment — Vercel
+
+The web admin is deployed as a static site to Vercel. The repository ships a
+[`vercel.json`](./vercel.json) that builds the Flutter web target via
+[`scripts/vercel_build.sh`](./scripts/vercel_build.sh) and serves
+`build/web/` with SPA rewrites.
+
+To deploy:
+
+```bash
+# One-time
+vercel login
+vercel link
+
+# Trigger a production deploy
+vercel --prod
+```
+
+Or push to the GitHub repo connected to Vercel
+(<https://github.com/MustafazadaAghasalim/adscreenbe>) and Vercel will build on
+every push to `main`.
+
+## Localisation
+
+Supported locales: **nl** (Dutch — default), **fr** (French), **en** (English).
+Translation files live in [`assets/translations/`](./assets/translations/).
+
+## Regional defaults
+
+- Backend host: `https://adscreen.be`
+- MQTT host: `adscreen.be`
+- Phone country code: `+32` (Belgium)
+- Timezone: `Europe/Brussels` (DST-aware)
+- Geofence zones: Brussels Center, Antwerp Center, Brussels Airport
+
+Update the placeholder navbar phone `+32 2 123 45 67` in
+[`lib/services/device_settings_service.dart`](./lib/services/device_settings_service.dart)
+and [`lib/ui/kiosk_screen.dart`](./lib/ui/kiosk_screen.dart) once the real
+support line is available.

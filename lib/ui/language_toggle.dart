@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-/// LanguageToggle — Sleek inline AZ / RU / EN toggle.
+/// LanguageToggle — Sleek inline NL / FR / EN toggle.
 ///
 /// Changes the app's Locale state in real-time via EasyLocalization,
 /// no restart required. Uses animated pill to indicate the active language.
@@ -10,8 +10,8 @@ class LanguageToggle extends StatelessWidget {
   const LanguageToggle({super.key});
 
   static const _languages = [
-    _LangOption(code: 'az', label: 'AZ', flag: '🇦🇿'),
-    _LangOption(code: 'ru', label: 'RU', flag: '🇷🇺'),
+    _LangOption(code: 'nl', label: 'NL', flag: '🇧🇪'),
+    _LangOption(code: 'fr', label: 'FR', flag: '🇧🇪'),
     _LangOption(code: 'en', label: 'EN', flag: '🇬🇧'),
   ];
 

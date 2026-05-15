@@ -84,7 +84,7 @@ The daemon collects and displays:
 - **Containers:** Running Docker containers
 
 ### **Settings Tab**
-- **Language:** Switch between EN (English), AZ (Azerbaijani), RU (Russian)
+- **Language:** Switch between NL (Dutch), FR (French), EN (English)
 - **Request Data:** Force immediate telemetry refresh
 - **Ping Test:** Test connectivity to 8.8.8.8
 - **Factory Reset:** Clear display with notice
@@ -243,8 +243,8 @@ The Arduino stores all UI strings in **Flash memory (PROGMEM)** to save RAM (Meg
 
 ### Current Implementation:
 - **English (EN):** Full native support
-- **Azerbaijani (AZ):** Latin transliteration (ə, ö, ü, ç, ş, ğ, ı)
-- **Russian (RU):** Latin transliteration (not Cyrillic)
+- **Dutch (NL):** Full Latin support
+- **French (FR):** Latin with accents (é, è, ê, à, ç, ô, ù)
 
 ### To add Cyrillic/Extended Glyphs:
 1. Generate a font with Adafruit's `fontconvert` tool

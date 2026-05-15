@@ -250,13 +250,13 @@ void main() async {
   runApp(
     EasyLocalization(
       supportedLocales: const [
-        Locale('az'),
-        Locale('ru'),
+        Locale('nl'),
+        Locale('fr'),
         Locale('en'),
       ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
-      startLocale: const Locale('az'),
+      startLocale: const Locale('nl'),
       child: const ProviderScope(child: AdscreenApp()),
     ),
   );

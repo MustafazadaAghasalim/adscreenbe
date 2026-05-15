@@ -617,11 +617,11 @@ class BottomBar extends StatelessWidget {
         final Color textColor = _parseColor(
             settings['navbarTextColor']?.toString(), Colors.white);
         final String qrUrl =
-            settings['navbarQrUrl']?.toString() ?? 'https://adscreen.az';
+            settings['navbarQrUrl']?.toString() ?? 'https://adscreen.be';
         final String websiteText =
-            settings['navbarWebsiteText']?.toString() ?? 'adscreen.az';
+            settings['navbarWebsiteText']?.toString() ?? 'adscreen.be';
         final String phoneText =
-            settings['navbarPhoneText']?.toString() ?? '+994 51 504 23 23';
+            settings['navbarPhoneText']?.toString() ?? '+32 2 123 45 67';
         final Color timerTextColor = _parseColor(
             settings['navbarTimerTextColor']?.toString(), Colors.white);
         final Color timerBorderColor = _parseColor(

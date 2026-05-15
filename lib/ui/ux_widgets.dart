@@ -183,14 +183,34 @@ class _PulseCTAIndicatorState extends State<PulseCTAIndicator>
 }
 
 /// Dark mode context-aware theme that switches based on time of day.
-/// Uses Baku timezone (UTC+4) for sunset/sunrise calculations.
+/// Uses Europe/Brussels timezone (UTC+1 winter, UTC+2 summer) for sunset/sunrise.
 class KioskTheme {
-  static const _bakuUtcOffset = 4;
+  // CET = UTC+1; CEST (last Sunday of March → last Sunday of October) = UTC+2.
+  static int _brusselsUtcOffset() {
+    final now = DateTime.now().toUtc();
+    return _isCestActive(now) ? 2 : 1;
+  }
 
-  /// Get current theme mode based on Baku time.
+  static bool _isCestActive(DateTime utc) {
+    final year = utc.year;
+    final dstStart = _lastSundayOfMonth(year, DateTime.march)
+        .add(const Duration(hours: 1)); // 01:00 UTC
+    final dstEnd = _lastSundayOfMonth(year, DateTime.october)
+        .add(const Duration(hours: 1)); // 01:00 UTC
+    return utc.isAfter(dstStart) && utc.isBefore(dstEnd);
+  }
+
+  static DateTime _lastSundayOfMonth(int year, int month) {
+    final lastDay = DateTime.utc(year, month + 1, 0);
+    final offset = lastDay.weekday % 7; // Sunday == 7 → 0
+    return DateTime.utc(year, month, lastDay.day - offset);
+  }
+
+  /// Get current theme mode based on Brussels time.
   static bool isDarkMode() {
-    final bakuNow = DateTime.now().toUtc().add(const Duration(hours: _bakuUtcOffset));
-    final hour = bakuNow.hour;
+    final brusselsNow =
+        DateTime.now().toUtc().add(Duration(hours: _brusselsUtcOffset()));
+    final hour = brusselsNow.hour;
     // Dark mode between 7 PM and 7 AM
     return hour >= 19 || hour < 7;
   }

@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "ads": "Annonces",
+    "live_view": "Vue en direct",
+    "telemetry": "Télémétrie",
+    "settings": "Paramètres"
+  },
+  "status": {
+    "live": "EN DIRECT",
+    "offline": "HORS LIGNE",
+    "connecting": "Connexion...",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté"
+  },
+  "kiosk": {
+    "no_ads": "Aucune annonce actuellement assignée",
+    "loading": "Chargement du contenu...",
+    "enter_pin": "Saisir le code PIN",
+    "wrong_pin": "Code PIN incorrect",
+    "unlock": "Déverrouiller",
+    "cancel": "Annuler",
+    "admin_mode": "Mode administrateur",
+    "exit_kiosk": "Quitter le kiosque"
+  },
+  "settings": {
+    "language": "Langue",
+    "brightness": "Luminosité",
+    "volume": "Volume",
+    "wifi": "Wi-Fi",
+    "about": "À propos",
+    "version": "Version",
+    "device_id": "ID de l'appareil",
+    "battery": "Batterie",
+    "storage": "Stockage libre",
+    "temperature": "Température"
+  },
+  "telemetry": {
+    "cpu_temp": "Température CPU",
+    "battery_level": "Niveau de batterie",
+    "signal_strength": "Force du signal",
+    "network_type": "Type de réseau",
+    "uptime": "Temps de fonctionnement",
+    "data_usage": "Utilisation des données",
+    "last_ping": "Dernier ping"
+  },
+  "buttons": {
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "apply": "Appliquer",
+    "close": "Fermer",
+    "confirm": "Confirmer"
+  }
+}
