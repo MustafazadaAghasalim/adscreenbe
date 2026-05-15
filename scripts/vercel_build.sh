@@ -11,7 +11,10 @@ set -euo pipefail
 echo "==> Adscreen Belgium :: Vercel build start"
 echo "==> $(date -u) | $(uname -a)"
 
-FLUTTER_VERSION="${FLUTTER_VERSION:-3.24.5}"
+# kiosk_mode 0.8.0 requires Dart SDK >= 3.10.1, which lands in Flutter 3.38+.
+# 3.41.4 is the latest stable as of this commit and is verified to build the
+# project locally (see commit 7706ab0 message).
+FLUTTER_VERSION="${FLUTTER_VERSION:-3.41.4}"
 FLUTTER_DIR="${HOME}/.flutter-${FLUTTER_VERSION}"
 FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 
