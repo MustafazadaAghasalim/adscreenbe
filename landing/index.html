@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A0D14" />
+  <title>Adscreen Belgium — Coming Soon</title>
+  <meta name="description" content="Adscreen Belgium — interactive in-vehicle advertising for taxis, rideshare and shared mobility. Launching in Brussels and Antwerp." />
+
+  <meta property="og:title" content="Adscreen Belgium — Coming Soon" />
+  <meta property="og:description" content="Interactive in-vehicle advertising, coming to Belgium in 2026." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://adscreen.be" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">adscreen<span class="brand-tld">.be</span></span>
+    </div>
+
+    <nav class="lang" role="tablist" aria-label="Language">
+      <button class="lang-btn is-active" role="tab" data-lang="nl" aria-selected="true">NL</button>
+      <button class="lang-btn" role="tab" data-lang="fr" aria-selected="false">FR</button>
+      <button class="lang-btn" role="tab" data-lang="en" aria-selected="false">EN</button>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" data-i18n="eyebrow">Belgium · 2026</span>
+
+      <h1 class="title">
+        <span data-i18n="title-1" class="title-line">Binnenkort</span>
+        <span data-i18n="title-2" class="title-line muted">in België</span>
+      </h1>
+
+      <p class="lede" data-i18n="lede">
+        Interactieve advertenties op het scherm in elke taxi en rideshare —
+        binnenkort in Brussel, Antwerpen en daarbuiten.
+      </p>
+
+      <div class="meta">
+        <div class="meta-item">
+          <span class="meta-label" data-i18n="meta-launch">Launch</span>
+          <span class="meta-value">Q3 2026</span>
+        </div>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <div class="meta-item">
+          <span class="meta-label" data-i18n="meta-cities">Cities</span>
+          <span class="meta-value">Brussels · Antwerp · Liège</span>
+        </div>
+        <span class="meta-sep" aria-hidden="true">·</span>
+        <div class="meta-item">
+          <span class="meta-label" data-i18n="meta-fleet">Fleet target</span>
+          <span class="meta-value">500+ screens</span>
+        </div>
+      </div>
+
+      <form class="signup" id="signup" novalidate>
+        <label class="visually-hidden" for="email" data-i18n="email-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="jij@bedrijf.be"
+          autocomplete="email"
+          required
+        />
+        <button type="submit" class="cta">
+          <span data-i18n="cta">Hou me op de hoogte</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M2 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="signals">
+        <div class="signal-row" data-i18n="signals-label">A new chapter of</div>
+        <a class="signal-link" href="https://adscreen.az" target="_blank" rel="noopener">
+          adscreen.az
+          <span class="signal-flag" aria-hidden="true">🇦🇿</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <div class="card card-a">
+        <div class="card-head">
+          <span class="card-dot dot-live"></span>
+          <span>Brussels · Tablet 12</span>
+        </div>
+        <div class="card-body card-body-a">
+          <span class="card-headline">15s spot · Mediamarkt</span>
+          <span class="card-sub">Plays in <strong>00:08</strong></span>
+        </div>
+      </div>
+
+      <div class="card card-b">
+        <div class="card-head">
+          <span class="card-dot dot-warn"></span>
+          <span>Antwerp · Fleet 04</span>
+        </div>
+        <div class="card-body">
+          <div class="bar"><div class="bar-fill" style="width:68%"></div></div>
+          <span class="card-sub">CTR · this week</span>
+          <span class="card-num">6.8%</span>
+        </div>
+      </div>
+
+      <div class="card card-c">
+        <div class="card-head">
+          <span class="card-dot dot-idle"></span>
+          <span>Liège · Survey</span>
+        </div>
+        <div class="card-body card-body-c">
+          <span class="card-sub">Top response</span>
+          <span class="card-headline">"Snellere wifi 📶"</span>
+          <span class="card-sub">1,204 antwoorden</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section class="features">
+    <article class="feat">
+      <h3 data-i18n="feat-1-title">Live in elke rit</h3>
+      <p data-i18n="feat-1-body">
+        Centraal beheerd vanaf één dashboard. Bedrijven plannen campagnes,
+        chauffeurs zien niets behalve de rit.
+      </p>
+    </article>
+    <article class="feat">
+      <h3 data-i18n="feat-2-title">Lokale targeting</h3>
+      <p data-i18n="feat-2-body">
+        Geofencing per stad en buurt. Een spot in Brussel Centrum is anders
+        dan een spot bij Antwerpen Centraal.
+      </p>
+    </article>
+    <article class="feat">
+      <h3 data-i18n="feat-3-title">Tweetalig, by design</h3>
+      <p data-i18n="feat-3-body">
+        Nederlands, Frans en Engels — content schakelt mee met het publiek.
+      </p>
+    </article>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <span class="brand-name small">adscreen<span class="brand-tld">.be</span></span>
+      <span class="footer-meta" data-i18n="footer-meta">© 2026 · Brussels · contact@adscreen.be</span>
+    </div>
+    <div class="footer-right">
+      <a href="mailto:contact@adscreen.be">contact@adscreen.be</a>
+    </div>
+  </footer>
+
+  <script src="/main.js" defer></script>
+</body>
+</html>
