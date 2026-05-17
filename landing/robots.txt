@@ -1,4 +1,18 @@
+# Adscreen Belgium — adscreen.be
+# Pre-launch marketing site. Everything below the root is public and
+# meant to be crawled. The product app (when live) will be served from
+# a separate origin and excluded from this robots file.
+
 User-agent: *
 Allow: /
 
+# Encourage richer indexing of the asset folder used by the marketing site
+Allow: /favicon.svg
+Allow: /og.svg
+Allow: /sitemap.xml
+
+# Sitemap location
 Sitemap: https://adscreen.be/sitemap.xml
+
+# Host directive helps engines pick the canonical hostname.
+Host: https://adscreen.be

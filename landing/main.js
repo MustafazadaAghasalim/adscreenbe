@@ -22,6 +22,7 @@
       'nav-how': 'Hoe het werkt',
       'nav-numbers': 'In cijfers',
       'nav-coverage': 'Steden',
+      'nav-team': 'Team',
       'nav-faq': 'FAQ',
       'nav-cta': 'Hou me op de hoogte',
       // hero
@@ -98,6 +99,15 @@
       'city-6': 'Brugge · 2027',
       'city-7': 'Namen · 2027',
       'city-8': '2027',
+      // team
+      'team-tag': 'Team',
+      'team-title': 'Gebouwd door operators, niet consultants.',
+      'team-lede':
+        'De oprichters achter adscreen.az brengen hetzelfde playbook naar België — met lokale partners, real-world fleet ops en jarenlange ervaring in DOOH.',
+      'role-ceo': 'CEO',
+      'role-cto': 'Mede-oprichter · CTO',
+      'role-cofounder': 'Mede-oprichter',
+      'member-cta': 'Bekijk op LinkedIn',
       // pricing
       'pricing-tag': 'Prijzen · pre-launch',
       'pricing-title': 'Pakketten openen Q3 2026.',
@@ -175,6 +185,7 @@
       'nav-how': 'Comment ça marche',
       'nav-numbers': 'En chiffres',
       'nav-coverage': 'Villes',
+      'nav-team': 'Équipe',
       'nav-faq': 'FAQ',
       'nav-cta': 'Tenez-moi au courant',
       'hero-eyebrow': 'Belgique · Q3 2026',
@@ -244,6 +255,14 @@
       'city-6': 'Bruges · 2027',
       'city-7': 'Namur · 2027',
       'city-8': '2027',
+      'team-tag': 'Équipe',
+      'team-title': 'Construit par des opérateurs, pas des consultants.',
+      'team-lede':
+        'Les fondateurs derrière adscreen.az apportent le même playbook à la Belgique — avec des partenaires locaux, des opérations de flotte réelles et des années d’expérience en DOOH.',
+      'role-ceo': 'CEO',
+      'role-cto': 'Co-fondateur · CTO',
+      'role-cofounder': 'Co-fondateur',
+      'member-cta': 'Voir sur LinkedIn',
       'pricing-tag': 'Tarifs · pré-lancement',
       'pricing-title': 'Les forfaits ouvrent au Q3 2026.',
       'pricing-lede':
@@ -317,6 +336,7 @@
       'nav-how': 'How it works',
       'nav-numbers': 'By the numbers',
       'nav-coverage': 'Cities',
+      'nav-team': 'Team',
       'nav-faq': 'FAQ',
       'nav-cta': 'Notify me',
       'hero-eyebrow': 'Belgium · Q3 2026',
@@ -386,6 +406,14 @@
       'city-6': 'Bruges · 2027',
       'city-7': 'Namur · 2027',
       'city-8': '2027',
+      'team-tag': 'Team',
+      'team-title': 'Built by operators, not consultants.',
+      'team-lede':
+        'The founders behind adscreen.az bring the same playbook to Belgium — with local partners, real-world fleet ops, and years of DOOH experience.',
+      'role-ceo': 'CEO',
+      'role-cto': 'Co-founder & CTO',
+      'role-cofounder': 'Co-founder',
+      'member-cta': 'View on LinkedIn',
       'pricing-tag': 'Pricing · pre-launch',
       'pricing-title': 'Packages open Q3 2026.',
       'pricing-lede':
@@ -540,29 +568,207 @@
     });
   }
 
-  // ── Subtle scroll reveal ─────────────────────────────────────────
-  if ('IntersectionObserver' in window) {
-    const reveal = (el) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(12px)';
-      el.style.transition = 'opacity 500ms ease, transform 500ms ease';
-    };
+  // ── Scroll reveal + per-section stagger ──────────────────────────
+  //
+  // Class-based: JS only adds .reveal then .is-revealed, the CSS owns the
+  // actual animation. Fallback marks everything visible so nothing can
+  // ever stay opacity:0.
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if ('IntersectionObserver' in window && !prefersReducedMotion) {
     const targets = document.querySelectorAll(
       '.section, .numbers, .logos, .pricing-card'
     );
-    targets.forEach(reveal);
+    targets.forEach((el) => el.classList.add('reveal'));
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.classList.add('is-revealed');
             io.unobserve(entry.target);
           }
         });
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
     );
     targets.forEach((t) => io.observe(t));
+  } else {
+    document
+      .querySelectorAll('.section, .numbers, .logos, .pricing-card')
+      .forEach((el) => el.classList.add('is-revealed'));
+  }
+
+  // ── Premium parallax / motion enhancements ───────────────────────
+  if (!prefersReducedMotion) {
+    initScrollProgress();
+    initHeroParallax();
+    initCardTilts();
+    initCountUp();
+    initMarqueeLogos();
+  }
+
+  /**
+   * Thin gradient bar at the very top of the page that grows as the user
+   * scrolls. Pure CSS handles the shimmer; JS only updates the width.
+   */
+  function initScrollProgress() {
+    const bar = document.querySelector('.scroll-progress');
+    if (!bar) return;
+    let ticking = false;
+    const update = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      bar.style.width = pct.toFixed(2) + '%';
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+
+  /**
+   * Track the mouse position inside the hero and publish it as the CSS
+   * custom properties --mx and --my (range -0.5 .. 0.5). The CSS then
+   * uses those values to tilt the tablet device and drift each floating
+   * chip by a per-chip intensity. RAF-throttled so we never do more work
+   * than one paint per frame.
+   */
+  function initHeroParallax() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    let mx = 0,
+      my = 0,
+      targetMx = 0,
+      targetMy = 0;
+    let rafId = null;
+    const root = hero;
+
+    const onMove = (e) => {
+      const rect = hero.getBoundingClientRect();
+      const point = e.touches ? e.touches[0] : e;
+      targetMx = ((point.clientX - rect.left) / rect.width - 0.5) * 2;
+      targetMy = ((point.clientY - rect.top) / rect.height - 0.5) * 2;
+      schedule();
+    };
+    const onLeave = () => {
+      targetMx = 0;
+      targetMy = 0;
+      schedule();
+    };
+
+    function schedule() {
+      if (rafId) return;
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function loop() {
+      // Lerp toward the target so motion feels physical, not jerky.
+      mx += (targetMx - mx) * 0.18;
+      my += (targetMy - my) * 0.18;
+      root.style.setProperty('--mx', mx.toFixed(3));
+      root.style.setProperty('--my', my.toFixed(3));
+      if (Math.abs(targetMx - mx) > 0.001 || Math.abs(targetMy - my) > 0.001) {
+        rafId = requestAnimationFrame(loop);
+      } else {
+        rafId = null;
+      }
+    }
+
+    hero.addEventListener('mousemove', onMove);
+    hero.addEventListener('mouseleave', onLeave);
+  }
+
+  /**
+   * Per-card 3D tilt. Each card publishes --tx / --ty (range -0.5 .. 0.5)
+   * based on the cursor position inside its bounding box; the CSS hover
+   * rule reads those vars to rotate the card in 3D space and shifts a
+   * radial purple wash to match the cursor.
+   */
+  function initCardTilts() {
+    const cards = document.querySelectorAll('.feat');
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        card.style.setProperty('--tx', x.toFixed(3));
+        card.style.setProperty('--ty', y.toFixed(3));
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--tx', 0);
+        card.style.setProperty('--ty', 0);
+      });
+    });
+  }
+
+  /**
+   * Count-up animation for any .num-val with data-target. Honours the
+   * thousand-separator format that's already in the DOM (uses nl-BE
+   * formatting → dot as thousands separator).
+   */
+  function initCountUp() {
+    const numbers = document.querySelectorAll('.num-val[data-target]');
+    if (!numbers.length || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          animateCountUp(entry.target);
+          io.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    numbers.forEach((el) => io.observe(el));
+  }
+
+  function animateCountUp(el) {
+    const target = parseInt(el.dataset.target, 10);
+    if (!target) return;
+    const original = el.textContent;
+    const suffixMatch = original.match(/(\D*)$/);
+    const suffix = suffixMatch ? suffixMatch[1] : '';
+    const duration = 1800;
+    const start = performance.now();
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    const fmt = (n) => new Intl.NumberFormat('nl-BE').format(n);
+
+    const tick = (now) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+      const current = Math.floor(easeOut(t) * target);
+      el.textContent = fmt(current) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = original; // restore the original string verbatim
+    };
+    requestAnimationFrame(tick);
+  }
+
+  /**
+   * Wrap the existing logo-row contents in a .logos-track div and clone
+   * them once so the CSS marquee animation loops seamlessly with
+   * translate3d(-50%, 0, 0).
+   */
+  function initMarqueeLogos() {
+    const row = document.querySelector('.logos-row');
+    if (!row || row.querySelector('.logos-track')) return;
+    const track = document.createElement('div');
+    track.className = 'logos-track';
+    while (row.firstChild) track.appendChild(row.firstChild);
+    // Duplicate for seamless loop
+    Array.from(track.children).forEach((node) =>
+      track.appendChild(node.cloneNode(true))
+    );
+    row.appendChild(track);
   }
 })();

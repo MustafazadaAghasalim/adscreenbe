@@ -1,5 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="fav-clip">
+      <rect width="32" height="32" rx="7"/>
+    </clipPath>
+  </defs>
   <rect width="32" height="32" rx="7" fill="#0A0D14"/>
-  <circle cx="16" cy="16" r="6" fill="#8B5CF6"/>
-  <circle cx="16" cy="16" r="11" fill="none" stroke="#8B5CF6" stroke-opacity="0.35" stroke-width="1.5"/>
+  <g clip-path="url(#fav-clip)">
+    <!-- Yellow bar -->
+    <polygon points="5,27 10,5 14,5 9,27" fill="#FDDA24"/>
+    <!-- Purple bar -->
+    <polygon points="14,27 19,5 23,5 18,27" fill="#8B5CF6"/>
+  </g>
 </svg>
